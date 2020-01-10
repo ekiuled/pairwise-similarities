@@ -1,6 +1,6 @@
 import dataset_parser as parser
 import statistics
-import dataset_visualizer as visualizer
+from visualization import dataset_visualizer as visualizer
 from similarities.lcs_similarity import LCSSimilarity
 import numpy as np
 from scipy.stats import chisquare

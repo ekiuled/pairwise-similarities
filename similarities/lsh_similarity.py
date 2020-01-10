@@ -1,4 +1,4 @@
-from similarity import Similarity
+from similarities.similarity import Similarity
 from lsh import minhash, cache
 
 

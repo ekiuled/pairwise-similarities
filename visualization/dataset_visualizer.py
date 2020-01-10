@@ -27,6 +27,8 @@ def visualize(x, y):
 
 
 def visualize_from_file(filename):
+    """Plots a histogram of LCS similarity distribution."""
+
     pairs, y = parser.dataset_from_file(filename)
     similarity = LCSSimilarity()
     x = similarity.run_similarity(pairs)
@@ -34,4 +36,4 @@ def visualize_from_file(filename):
 
 
 if __name__ == '__main__':
-    visualize_from_file('data.csv')
+    visualize_from_file('filtered.csv')
