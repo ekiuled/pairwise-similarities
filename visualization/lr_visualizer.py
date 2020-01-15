@@ -3,12 +3,13 @@ import dataset_parser as parser
 import plotly.graph_objects as go
 from sklearn.linear_model import LogisticRegression
 from logistic_regression import logistic_regression
+from sklearn.model_selection import train_test_split
 import numpy as np
 
 
-def plot_lr(filename, similarity, fig):
-    lr = logistic_regression(filename, similarity,
-                             extra_features=True, show_metrics=True)
+def plot_lr(pairs, groups, similarity, fig):
+    lr = logistic_regression(pairs, groups, similarity,
+                             extra_features=True, show_metrics=True)[0]
 
     w = lr.coef_[0]
     a = -w[0] / w[1]
@@ -55,8 +56,6 @@ def hist3d(sims, lengths, fig):
 
 
 def plot_dataset(sims, lenghts, groups, fig):
-    n_bins = get_bins(len(sims))
-
     sims_pos = list(map(lambda x: x[0], list(
         filter(lambda x: x[1] == '1', zip(sims, groups)))))
     lenghts_pos = list(map(lambda x: x[0], list(
@@ -107,6 +106,31 @@ def plot_dataset(sims, lenghts, groups, fig):
     return fig
 
 
+def plot_error(pairs, groups, similarity, fig):
+    sizes = list(range(100, len(pairs), 100))
+    errors = []
+
+    for n in sizes:
+        p, _, g, _ = train_test_split(
+            pairs, groups, random_state=1, train_size=n)
+        m = logistic_regression(p, g, similarity,
+                                extra_features=True, return_metrics=True)[1]
+        errors.append(m)
+
+    fig.add_trace(go.Scatter(
+        x=sizes,
+        y=errors,
+        mode='lines+markers'
+    ))
+
+    fig.update_layout(
+        xaxis_title="Dataset size",
+        yaxis_title="F1 score",
+    )
+
+    return fig
+
+
 def visualize_data_and_lr_decision_boundary(filename, similarity):
     pairs, groups = parser.dataset_from_file(filename)
     lengths = list(map(lambda x: (len(x[0]) + len(x[1]))*0.5, pairs))
@@ -115,6 +139,13 @@ def visualize_data_and_lr_decision_boundary(filename, similarity):
     fig = go.Figure()
     #fig = hist3d(sims, lengths, fig)
     fig = plot_dataset(sims, lengths, groups, fig)
-    fig = plot_lr(filename, similarity, fig)
+    fig = plot_lr(pairs, groups, similarity, fig)
     fig.update_yaxes(range=[0, 2000])
+    fig.show()
+
+
+def visualize_error(filename, similarity):
+    pairs, groups = parser.dataset_from_file(filename)
+    fig = go.Figure()
+    fig = plot_error(pairs, groups, similarity, fig)
     fig.show()
