@@ -55,15 +55,16 @@ def hist3d(sims, lengths, fig):
     return fig
 
 
-def plot_dataset(sims, lenghts, groups, fig):
-    sims_pos = list(map(lambda x: x[0], list(
-        filter(lambda x: x[1] == '1', zip(sims, groups)))))
-    lenghts_pos = list(map(lambda x: x[0], list(
-        filter(lambda x: x[1] == '1', zip(lenghts, groups)))))
+def plot_dataset(pairs, groups, similarity, fig):
+    pairs_pos = list(map(lambda x: x[0], list(
+        filter(lambda x: x[1] == '1', zip(pairs, groups)))))
+    sims_pos = similarity.run_similarity(pairs_pos)
+    lenghts_pos = list(map(lambda x: (len(x[0]) + len(x[1]))*0.5, pairs_pos))
 
     fig.add_trace(go.Scatter(
         x=sims_pos,
         y=lenghts_pos,
+        text=list(map(lambda x: x[0] + '<br>' + x[1], pairs_pos)),
         mode='markers',
         name='positive',
         showlegend=False,
@@ -76,14 +77,15 @@ def plot_dataset(sims, lenghts, groups, fig):
         )
     ))
 
-    sims_neg = list(map(lambda x: x[0], list(
-        filter(lambda x: x[1] == '0', zip(sims, groups)))))
-    lenghts_neg = list(map(lambda x: x[0], list(
-        filter(lambda x: x[1] == '0', zip(lenghts, groups)))))
+    pairs_neg = list(map(lambda x: x[0], list(
+        filter(lambda x: x[1] == '0', zip(pairs, groups)))))
+    sims_neg = similarity.run_similarity(pairs_neg)
+    lenghts_neg = list(map(lambda x: (len(x[0]) + len(x[1]))*0.5, pairs_neg))
 
     fig.add_trace(go.Scatter(
         x=sims_neg,
         y=lenghts_neg,
+        text=list(map(lambda x: x[0] + '<br>' + x[1], pairs_neg)),
         mode='markers',
         name='negative',
         showlegend=False,
@@ -99,8 +101,8 @@ def plot_dataset(sims, lenghts, groups, fig):
     fig.update_layout(
         xaxis_title="Similarities",
         yaxis_title="Average lenght",
-        height=800,
-        width=800,
+        height=1000,
+        width=1200,
     )
 
     return fig
@@ -112,7 +114,7 @@ def plot_error(pairs, groups, similarity, fig):
 
     for n in sizes:
         p, _, g, _ = train_test_split(
-            pairs, groups, random_state=1, train_size=n)
+            pairs, groups, train_size=n)
         m = logistic_regression(p, g, similarity,
                                 extra_features=True, return_metrics=True)[1]
         errors.append(m)
@@ -133,12 +135,10 @@ def plot_error(pairs, groups, similarity, fig):
 
 def visualize_data_and_lr_decision_boundary(filename, similarity):
     pairs, groups = parser.dataset_from_file(filename)
-    lengths = list(map(lambda x: (len(x[0]) + len(x[1]))*0.5, pairs))
-    sims = similarity.run_similarity(pairs)
 
     fig = go.Figure()
     #fig = hist3d(sims, lengths, fig)
-    fig = plot_dataset(sims, lengths, groups, fig)
+    fig = plot_dataset(pairs, groups, similarity, fig)
     fig = plot_lr(pairs, groups, similarity, fig)
     fig.update_yaxes(range=[0, 2000])
     fig.show()
