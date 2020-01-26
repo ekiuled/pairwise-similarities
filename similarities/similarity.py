@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from vectorizer import vectorize
+from normalizer import normalize
 
 
 class Similarity(ABC):
@@ -17,7 +18,8 @@ class Similarity(ABC):
                     self.vectorized_similarity(item[0], item[1]))
         else:
             for item in data:
-                similarities.append(self.similarity(item[0], item[1]))
+                similarities.append(self.similarity(
+                    normalize(item[0]), normalize(item[1])))
 
         return similarities
 
@@ -30,15 +32,12 @@ class Similarity(ABC):
         length = 0
 
         for key in {**x, **y}.keys():
+            xval = x.get(key, '')
+            yval = y.get(key, '')
             if key in x and key in y:
-                xval = x[key]
-                yval = y[key]
-                result += self.similarity(xval, yval) * (len(xval) + len(yval))
-                length += len(xval) + len(yval)
-            elif key in x:
-                length += len(x[key])
-            else:
-                length += len(y[key])
+                result += self.similarity(normalize(xval),
+                                          normalize(yval)) * (len(xval) + len(yval))
+            length += len(xval) + len(yval)
 
         return result / length
 
