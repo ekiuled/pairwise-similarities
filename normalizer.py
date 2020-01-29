@@ -16,10 +16,10 @@ def normalize(s):
     #stop_words = set(stopwords.words('english'))
     tokens = word_tokenize(s)
 
-    lemmatizer = WordNetLemmatizer()
-    filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]]) for token, tag in pos_tag(tokens) if not token in punctuation]
+    #lemmatizer = WordNetLemmatizer()
+    #filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]]) for token, tag in pos_tag(tokens) if not token in punctuation]
     
-    #filtered = [w for w in tokens if not w in punctuation]
+    filtered = [w for w in tokens if not w in punctuation]
     return ' '.join(filtered)
 
 

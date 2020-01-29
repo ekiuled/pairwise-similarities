@@ -101,8 +101,8 @@ def plot_dataset(pairs, groups, similarity, fig):
     fig.update_layout(
         xaxis_title="Similarities",
         yaxis_title="Average lenght",
-        height=1000,
-        width=1200,
+        height=900,
+        width=1000,
     )
 
     return fig

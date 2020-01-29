@@ -35,8 +35,9 @@ class Similarity(ABC):
             xval = x.get(key, '')
             yval = y.get(key, '')
             if key in x and key in y:
-                result += self.similarity(normalize(xval),
-                                          normalize(yval)) * (len(xval) + len(yval))
+                xval = normalize(xval)
+                yval = normalize(yval)
+                result += self.similarity(xval, yval) * (len(xval) + len(yval))
             length += len(xval) + len(yval)
 
         return result / length
