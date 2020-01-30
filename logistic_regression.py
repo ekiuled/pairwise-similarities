@@ -41,7 +41,7 @@ def logistic_regression(pairs, groups, similarity, extra_features=False, show_me
 
     x = get_features_extra(
         pairs, similarity) if extra_features else get_features(pairs, similarity)
-    y = groups
+    y = list(map(int, groups))
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
 
     lr = LogisticRegression().fit(x_train, y_train)
@@ -50,13 +50,13 @@ def logistic_regression(pairs, groups, similarity, extra_features=False, show_me
         y_pred = lr.predict(x_test)
 
         if show_metrics:
-            print('Precision:', metrics.precision_score(
-                y_test, y_pred, pos_label='1'))
-            print('Recall:', metrics.recall_score(y_test, y_pred, pos_label='1'))
-            print('F1 score:', metrics.f1_score(y_test, y_pred, pos_label='1'))
+            print('Precision:', metrics.precision_score(y_test, y_pred))
+            print('Recall:', metrics.recall_score(y_test, y_pred))
+            print('F1 score:', metrics.f1_score(y_test, y_pred))
+            print('Log loss:', metrics.log_loss(y_test, y_pred))
 
         if return_metrics:
-            return [lr, metrics.f1_score(y_test, y_pred, pos_label='1')]
+            return [lr, metrics.f1_score(y_test, y_pred)]
 
     return [lr]
 
@@ -66,5 +66,3 @@ if __name__ == "__main__":
     pairs, groups = parser.dataset_from_file('filtered.csv')
     logistic_regression(pairs, groups, LCSSimilarity(),
                         extra_features=False, show_metrics=True)
-    # test('filtered.csv', COSSimilarity())
-    # test('filtered.csv', LevenshteinSimilarity())
