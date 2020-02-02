@@ -108,15 +108,16 @@ def plot_dataset(pairs, groups, similarity, fig):
     return fig
 
 
-def plot_error(pairs, groups, similarity, fig):
-    sizes = list(range(100, len(pairs), 100))
+def plot_error(pairs, groups, similarity, fig, error='f1', range_ub=1000):
+    sizes = list(range(100, min(len(pairs), range_ub), 100))
     errors = []
 
     for n in sizes:
         p, _, g, _ = train_test_split(
             pairs, groups, train_size=n)
-        m = logistic_regression(p, g, similarity,
-                                extra_features=True, return_metrics=True)[1]
+        m = logistic_regression(
+            p, g, similarity, extra_features=True, return_metrics=True)[1] if error == 'f1' else logistic_regression(
+            p, g, similarity, extra_features=True, return_metrics=True)[2]
         errors.append(m)
 
     fig.add_trace(go.Scatter(
@@ -144,8 +145,14 @@ def visualize_data_and_lr_decision_boundary(filename, similarity):
     fig.show()
 
 
-def visualize_error(filename, similarity):
+def visualize_error(filename, similarities, error='f1'):
+    errors = {'f1', 'log_loss'}
+    if error not in errors:
+        raise ValueError(
+            "visualize_error: error must be one of %r." % errors)
+
     pairs, groups = parser.dataset_from_file(filename)
     fig = go.Figure()
-    fig = plot_error(pairs, groups, similarity, fig)
+    for similarity in similarities:
+        fig = plot_error(pairs, groups, similarity, fig, error)
     fig.show()

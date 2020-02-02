@@ -56,7 +56,7 @@ def logistic_regression(pairs, groups, similarity, extra_features=False, show_me
             print('Log loss:', metrics.log_loss(y_test, y_pred))
 
         if return_metrics:
-            return [lr, metrics.f1_score(y_test, y_pred)]
+            return [lr, metrics.f1_score(y_test, y_pred), metrics.log_loss(y_test, y_pred)]
 
     return [lr]
 
