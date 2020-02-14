@@ -2,19 +2,18 @@ from math import log
 import dataset_parser as parser
 import plotly.graph_objects as go
 from sklearn.linear_model import LogisticRegression
-from logistic_regression import logistic_regression
+from logistic_regression import Model
 from sklearn.model_selection import train_test_split
 import numpy as np
 
 
 def plot_lr(pairs, groups, similarity, fig):
-    lr = logistic_regression(pairs, groups, similarity,
-                             extra_features=True, show_metrics=True)[0]
+    model = Model(similarity)
+    model.train(pairs, groups, show_metrics=True)
 
-    w = lr.coef_[0]
-    a = -w[0] / w[1]
+    a, b = model.coef()
     xx = np.linspace(0, 1)
-    yy = a * xx - (lr.intercept_[0]) / w[1]
+    yy = a * xx + b
 
     fig.add_trace(go.Scatter(
         x=xx,
@@ -111,13 +110,14 @@ def plot_dataset(pairs, groups, similarity, fig):
 def plot_error(pairs, groups, similarity, fig, error='f1', range_ub=1000):
     sizes = list(range(100, min(len(pairs), range_ub), 100))
     errors = []
+    model = Model(similarity)
 
     for n in sizes:
         p, _, g, _ = train_test_split(
             pairs, groups, train_size=n)
-        m = logistic_regression(
-            p, g, similarity, extra_features=True, return_metrics=True)[1] if error == 'f1' else logistic_regression(
-            p, g, similarity, extra_features=True, return_metrics=True)[2]
+        model.train(p, g, return_metrics=True)
+        m = model.train(p, g, return_metrics=True)[
+            0] if error == 'f1' else model.train(p, g, return_metrics=True)[1]
         errors.append(m)
 
     fig.add_trace(go.Scatter(

@@ -10,59 +10,73 @@ import dataset_parser as parser
 import numpy as np
 
 
-def get_features(pairs, similarity):
-    """Extracts similarity features and ground truth target values from a csv file."""
+class Model:
+    def __init__(self, similarity):
+        self.similarity = similarity
 
-    x = similarity.run_similarity(pairs)
-    x = np.reshape(x, (-1, 1))
-    return x
+    def get_features(self, pairs):
+        """Extracts similarity features and ground truth target values from a csv file."""
 
+        x = self.similarity.run_similarity(pairs)
+        x = np.reshape(x, (-1, 1))
+        return x
 
-def get_features_extra(pairs, similarity):
-    """Extracts similarity and lenght features and ground truth target values from a csv file."""
+    def get_features_extra(self, pairs):
+        """Extracts similarity and lenght features and ground truth target values from a csv file."""
 
-    similarities = similarity.run_similarity(pairs)
-    x = []
-    for pair, sim in zip(pairs, similarities):
-        l1, l2 = len(pair[0]), len(pair[1])
-        x.append([sim, l1 + l2])
-        # x.append([sim, min(l1, l2), max(l1, l2)])
-    return x
+        similarities = self.similarity.run_similarity(pairs)
+        x = []
+        for pair, sim in zip(pairs, similarities):
+            l1, l2 = len(pair[0]), len(pair[1])
+            x.append([sim, l1 + l2])
+            # x.append([sim, min(l1, l2), max(l1, l2)])
+        return x
 
+    def train(self, pairs, groups, show_metrics=False, return_metrics=False):
+        """Trains logistic regression and returns the metrics.
 
-def logistic_regression(pairs, groups, similarity, extra_features=False, show_metrics=False, return_metrics=False):
-    """Performs logistic regression with chosen similarity method as a feature and returns the classifier and metrics.
-    
-    Returns
-    -------
-    [lr, m]
-        List of logistic regression classifier and computed F1 score. 
-    """
+        Returns
+        -------
+        [m]
+            List of computed metrics. 
+        """
 
-    x = get_features_extra(
-        pairs, similarity) if extra_features else get_features(pairs, similarity)
-    y = list(map(int, groups))
-    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
+        x = self.get_features_extra(pairs)
+        y = list(map(int, groups))
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, random_state=1)
 
-    lr = LogisticRegression().fit(x_train, y_train)
+        self.lr = LogisticRegression().fit(x_train, y_train)
 
-    if show_metrics or return_metrics:
-        y_pred = lr.predict(x_test)
+        if show_metrics or return_metrics:
+            y_pred = self.lr.predict(x_test)
 
-        if show_metrics:
-            print('Precision:', metrics.precision_score(y_test, y_pred))
-            print('Recall:', metrics.recall_score(y_test, y_pred))
-            print('F1 score:', metrics.f1_score(y_test, y_pred))
-            print('Log loss:', metrics.log_loss(y_test, y_pred))
+            if show_metrics:
+                print('Precision:', metrics.precision_score(y_test, y_pred))
+                print('Recall:', metrics.recall_score(y_test, y_pred))
+                print('F1 score:', metrics.f1_score(y_test, y_pred))
+                print('Log loss:', metrics.log_loss(y_test, y_pred))
 
-        if return_metrics:
-            return [lr, metrics.f1_score(y_test, y_pred), metrics.log_loss(y_test, y_pred)]
+            if return_metrics:
+                return [metrics.f1_score(y_test, y_pred), metrics.log_loss(y_test, y_pred)]
 
-    return [lr]
+        return []
+
+    def coef(self):
+        """Decision boundary coefficients."""
+
+        w = self.lr.coef_[0]
+        a = -w[0] / w[1]
+        return [a, -(self.lr.intercept_[0]) / w[1]]
+
+    def predict(self, pairs):
+        x = self.get_features_extra(pairs)
+        y = self.lr.predict(x)
+        return y
 
 
 if __name__ == "__main__":
     #parser.cache_similarity_to_file('filtered.csv', 'filtered_lcs.csv', LCSSimilarity())
     pairs, groups = parser.dataset_from_file('filtered.csv')
-    logistic_regression(pairs, groups, LCSSimilarity(),
-                        extra_features=False, show_metrics=True)
+    model = Model(LCSSimilarity())
+    model.train(pairs, groups, show_metrics=True)
