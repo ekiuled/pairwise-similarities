@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from vectorizer import vectorize
+from vectorizer import vectorize, composite_tag
 from normalizer import normalize
+from scipy.optimize import linprog
 
 
 class Similarity(ABC):
@@ -8,7 +9,7 @@ class Similarity(ABC):
         self.vectorized = vectorized
 
     def run_similarity(self, data):
-        """Applies similarity function to each element in the dataset."""
+        """Applies the similarity function to each element of the list."""
 
         similarities = []
 
@@ -24,7 +25,7 @@ class Similarity(ABC):
         return similarities
 
     def vectorized_similarity(self, x, y):
-        """Takes two strings as arguments, parses them as vectors of JavaDoc tags and calculates their similarity."""
+        """Parses two strings as vectors of JavaDoc tags and calculates their similarity."""
 
         x = vectorize(x)
         y = vectorize(y)
@@ -34,16 +35,35 @@ class Similarity(ABC):
         for key in {**x, **y}.keys():
             xval = x.get(key, '')
             yval = y.get(key, '')
-            if key in x and key in y:
-                xval = normalize(xval)
-                yval = normalize(yval)
-                result += self.similarity(xval, yval) * (len(xval) + len(yval))
-            length += len(xval) + len(yval)
+            if xval and yval:
+                if key in ['@param', '@exception', '@throws']:
+                    xlist = [normalize(val) for val in composite_tag(xval, key)]
+                    ylist = [normalize(val) for val in composite_tag(yval, key)]
+                    result += self.composite_similarity(xlist, ylist) * (len(xval) + len(yval))
+                else:
+                    xval = normalize(xval)
+                    yval = normalize(yval)
+                    result += self.similarity(xval, yval) * (len(xval) + len(yval))
+                length += len(xval) + len(yval)
 
-        return result / length
+        return result / length if length else 0
+
+    def composite_similarity(self, x, y):
+        """Matches optimally elements of two lists and calculates their similarity."""
+
+        s = [-self.similarity(p, q) for p in x for q in y]
+        n = len(x)
+        m = len(y)
+        A = [[0]*(m*i) + [1]*m + [0]*(m*(n-i-1)) for i in range(n)]
+        for i in range(m):
+            A.append([0]*(n*m))
+            for j in range(n):
+                A[n + i][i + j*m] = 1
+        res = linprog(s, A_ub=A, b_ub=[1]*(n+m))
+        return -res.get('fun') / min(n, m)
 
     @abstractmethod
     def similarity(self, x, y):
-        """Takes two strings as arguments and returns their similarity."""
+        """Calculates similarity of two strings."""
 
         pass
