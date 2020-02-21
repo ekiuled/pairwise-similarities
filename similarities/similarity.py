@@ -59,7 +59,7 @@ class Similarity(ABC):
             A.append([0]*(n*m))
             for j in range(n):
                 A[n + i][i + j*m] = 1
-        res = linprog(s, A_ub=A, b_ub=[1]*(n+m))
+        res = linprog(s, A_ub=A, b_ub=[1]*(n+m), options=dict(lstsq=True))
         return -res.get('fun') / min(n, m)
 
     @abstractmethod
