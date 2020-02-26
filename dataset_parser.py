@@ -89,8 +89,9 @@ def parse(filename, postfix=''):
 
 
 if __name__ == '__main__':
-    pass
-    # parse('/home/cthfvrl/diploma/Datasets/O.23.SLF4J/SLF4J__7c2f6cd1.2019-12-XX_dluciv_dkoznov_marked.txt', 'slf4j_full')
+    #pass
+     parse('/home/cthfvrl/diploma/Datasets/O.23.SLF4J/SLF4J__7c2f6cd1.2019-12-XX_dluciv_dkoznov_marked.txt', 'slf4j_full')
     # parse('/home/cthfvrl/diploma/Datasets/O.21.JUnit4/junit4__9e98a85.dkoznov_dluciv_2019.12_marked_2_pairs.txt', 'junit4_full')
-    # parse('/home/cthfvrl/diploma/Datasets/O.22.Mockito/mockito__196ff979.2019-12-XX_dluciv_dkoznov_marked.txt', 'mockito_full')
+    #parse('/home/cthfvrl/Code/software-documentation-collection/Corpus/O.21.JUnit4/analysis-input/junit4__9e98a85.dkoznov_dluciv_2019.12_marked_2_pairs.txt', 'junit4_new_full')
+     parse('/home/cthfvrl/diploma/Datasets/O.22.Mockito/mockito__196ff979.2019-12-XX_dluciv_dkoznov_marked.txt', 'mockito_full')
     # parse('/home/cthfvrl/diploma/Datasets/O.24.GSON/GSON_2b08c88c.dluciv_marked.txt', 'gson_full')

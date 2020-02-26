@@ -20,7 +20,7 @@ def normalize(s):
     lemmatizer = WordNetLemmatizer()
     filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]]) for token, tag in pos_tag(tokens) if not token in punctuation]
     
-    #filtered = [w for w in tokens if not w in stop_words]
+    filtered = [w for w in tokens if not w in stop_words]
     return ' '.join(filtered)
 
 

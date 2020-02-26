@@ -1,5 +1,5 @@
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_validate
 import sklearn.metrics as metrics
 
 from similarities.lcs_similarity import LCSSimilarity
@@ -10,7 +10,7 @@ import dataset_parser as parser
 import numpy as np
 
 
-class Model:
+class Model():
     def __init__(self, similarity):
         self.similarity = similarity
 
@@ -31,6 +31,11 @@ class Model:
             x.append([sim, l1 + l2])
             # x.append([sim, min(l1, l2), max(l1, l2)])
         return x
+
+    def cross_validate(self, pairs, groups, scoring='f1'):
+        X = self.get_features_extra(pairs)
+        y = list(map(int, groups))
+        return cross_validate(LogisticRegression(), X, y, scoring=scoring)
 
     def train(self, pairs, groups, show_metrics=False, return_metrics=False):
         """Trains logistic regression and returns the metrics.
@@ -77,6 +82,8 @@ class Model:
 
 if __name__ == "__main__":
     #parser.cache_similarity_to_file('filtered.csv', 'filtered_lcs.csv', LCSSimilarity())
-    pairs, groups = parser.dataset_from_file('filtered.csv')
-    model = Model(LCSSimilarity())
-    model.train(pairs, groups, show_metrics=True)
+    pairs, groups = parser.dataset_from_file('data_clean.csv')
+    model = Model(LCSSimilarity(vectorized=True))
+    #model.train(pairs, groups, show_metrics=True)
+    scores = model.cross_validate(pairs, groups)['test_score']
+    print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))

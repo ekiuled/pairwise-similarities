@@ -8,7 +8,7 @@ from scipy.stats import chisquare
 
 def binned(data, num):
     n = len(data)
-    n_bins = n // num
+    n_bins = max(n // num, 1)
     delta = 1 / n_bins
 
     similarity = LCSSimilarity()
@@ -71,7 +71,11 @@ def run_filter(file_in, file_out, num):
 
 
 if __name__ == '__main__':
+    #pass
     # run_filter('data.csv', 'filtered.csv', 100)
     # run_filter('filtered.csv', 'filtered2.csv', 100)
     # visualizer.visualize_from_file('filtered.csv')
-    visualizer.visualize_from_file('filtered.csv')
+    # run_filter('data_junit4_new_full.csv', 'data_junit4_new_filtered.csv', 700)
+    # run_filter('data_gson_full.csv', 'data_gson_filtered.csv', 20)
+     run_filter('data_mockito_full.csv', 'data_mockito_filtered.csv', 400)
+    # visualizer.visualize_from_file('data_mockito_full.csv')
