@@ -51,10 +51,10 @@ class Model():
         x_train, x_test, y_train, y_test = train_test_split(
             x, y, random_state=1)
 
-        self.lr = LogisticRegression().fit(x_train, y_train)
+        self.model = LogisticRegression().fit(x_train, y_train)
 
         if show_metrics or return_metrics:
-            y_pred = self.lr.predict(x_test)
+            y_pred = self.model.predict(x_test)
 
             if show_metrics:
                 print('Precision:', metrics.precision_score(y_test, y_pred))
@@ -70,13 +70,13 @@ class Model():
     def coef(self):
         """Decision boundary coefficients."""
 
-        w = self.lr.coef_[0]
+        w = self.model.coef_[0]
         a = -w[0] / w[1]
-        return [a, -(self.lr.intercept_[0]) / w[1]]
+        return [a, -(self.model.intercept_[0]) / w[1]]
 
     def predict(self, pairs):
         x = self.get_features_extra(pairs)
-        y = self.lr.predict(x)
+        y = self.model.predict(x)
         return y
 
 
