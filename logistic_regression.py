@@ -5,6 +5,7 @@ import sklearn.metrics as metrics
 from similarities.lcs_similarity import LCSSimilarity
 from similarities.cos_similarity import COSSimilarity
 from similarities.levenshtein_similarity import LevenshteinSimilarity
+from similarities.lsh_similarity import LSHSimilarity
 import dataset_parser as parser
 
 import numpy as np
@@ -81,9 +82,9 @@ class Model():
 
 
 if __name__ == "__main__":
-    #parser.cache_similarity_to_file('filtered.csv', 'filtered_lcs.csv', LCSSimilarity())
-    pairs, groups = parser.dataset_from_file('data_clean.csv')
-    model = Model(LCSSimilarity(vectorized=True))
-    #model.train(pairs, groups, show_metrics=True)
-    scores = model.cross_validate(pairs, groups)['test_score']
-    print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    pairs, groups = parser.dataset_from_file('filtered.csv')
+    vectorized = True
+    for similarity in [LCSSimilarity(vectorized=vectorized), COSSimilarity(vectorized=vectorized), LevenshteinSimilarity(vectorized=vectorized), LSHSimilarity(vectorized=vectorized)]:
+        model = Model(similarity)
+        scores = model.cross_validate(pairs, groups)['test_score']
+        print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
