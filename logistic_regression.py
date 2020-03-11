@@ -1,5 +1,5 @@
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, cross_validate
+from sklearn.model_selection import train_test_split, cross_validate, StratifiedKFold
 import sklearn.metrics as metrics
 
 from similarities.lcs_similarity import LCSSimilarity
@@ -33,10 +33,23 @@ class Model():
             # x.append([sim, min(l1, l2), max(l1, l2)])
         return x
 
-    def cross_validate(self, pairs, groups, scoring='f1'):
+    def j_k_fold_cv(self, pairs, groups, scoring='f1', j=4, k=5):
+        """Performs J-K-fold CV and returns a list of J scores."""
+
         X = self.get_features_extra(pairs)
         y = list(map(int, groups))
-        return cross_validate(LogisticRegression(), X, y, scoring=scoring)
+        scores = []
+        for _ in range(j):
+            scores.append(np.mean(cross_validate(
+                LogisticRegression(), X, y, scoring=scoring, cv=StratifiedKFold(n_splits=k, shuffle=True))['test_score']))
+        return scores
+
+    def cross_validate(self, pairs, groups, scoring='f1'):
+        """Performs a single run of K-fold CV and returns a list of scores."""
+
+        X = self.get_features_extra(pairs)
+        y = list(map(int, groups))
+        return cross_validate(LogisticRegression(), X, y, scoring=scoring)['test_score']
 
     def train(self, pairs, groups, show_metrics=False, return_metrics=False):
         """Trains logistic regression and returns the metrics.
@@ -83,8 +96,12 @@ class Model():
 
 if __name__ == "__main__":
     pairs, groups = parser.dataset_from_file('filtered.csv')
-    vectorized = True
-    for similarity in [LCSSimilarity(vectorized=vectorized), COSSimilarity(vectorized=vectorized), LevenshteinSimilarity(vectorized=vectorized), LSHSimilarity(vectorized=vectorized)]:
-        model = Model(similarity)
-        scores = model.cross_validate(pairs, groups)['test_score']
-        print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    for vectorized in [False, True]:
+        print('Vectorized =', vectorized)
+        for name, similarity in zip(['LCS', 'COS', 'Lev', 'LSH'], [LCSSimilarity(vectorized=vectorized), COSSimilarity(vectorized=vectorized), LevenshteinSimilarity(vectorized=vectorized), LSHSimilarity(vectorized=vectorized)]):
+            model = Model(similarity)
+            scores = model.j_k_fold_cv(pairs, groups)
+            print('%s F1: %0.3f (+/- %0.3f)' % (name, np.mean(scores), np.std(scores) * 2))
+            #scores = model.cross_validate(pairs, groups)
+            #print('%s F1: %0.3f (+/- %0.32f)' % (name, np.mean(scores), np.std(scores) * 2))
+
