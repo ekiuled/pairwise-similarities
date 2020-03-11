@@ -36,9 +36,9 @@ class Similarity(ABC):
             xval = x.get(key, '')
             yval = y.get(key, '')
             if xval and yval:
-                if key in ['@param', '@exception', '@throws']:
-                    xlist = [normalize(val) for val in composite_tag(xval, key)]
-                    ylist = [normalize(val) for val in composite_tag(yval, key)]
+                if type(xval) is list:
+                    xlist = [normalize(val) for val in xval]
+                    ylist = [normalize(val) for val in yval]
                     result += self.composite_similarity(xlist, ylist) * (len(xval) + len(yval))
                 else:
                     xval = normalize(xval)
