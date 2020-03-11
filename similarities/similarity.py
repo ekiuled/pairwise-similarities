@@ -64,6 +64,6 @@ class Similarity(ABC):
 
     @abstractmethod
     def similarity(self, x, y):
-        """Calculates similarity of two strings."""
+        """Calculates raw similarity of two strings."""
 
         pass
