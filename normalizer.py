@@ -14,12 +14,12 @@ def normalize(s):
     tag_map['V'] = wordnet.VERB
     tag_map['R'] = wordnet.ADV
 
-    stop_words = set(stopwords.words('english'))
     tokens = word_tokenize(s)
 
     lemmatizer = WordNetLemmatizer()
     filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]]) for token, tag in pos_tag(tokens) if not token in punctuation]
     
+    stop_words = set(stopwords.words('english'))
     filtered = [w for w in tokens if not w in stop_words]
     return ' '.join(filtered)
 

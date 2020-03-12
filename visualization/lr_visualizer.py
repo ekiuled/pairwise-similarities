@@ -107,7 +107,7 @@ def plot_dataset(pairs, groups, similarity, fig):
     return fig
 
 
-def plot_error(pairs, groups, similarity, fig, error='f1', range_ub=1000):
+def plot_error(pairs, groups, similarity, fig, error='f1', range_ub=2000):
     sizes = list(range(100, min(len(pairs), range_ub), 100))
     errors = []
     model = Model(similarity)
@@ -116,8 +116,7 @@ def plot_error(pairs, groups, similarity, fig, error='f1', range_ub=1000):
         p, _, g, _ = train_test_split(
             pairs, groups, train_size=n)
         model.train(p, g, return_metrics=True)
-        m = model.train(p, g, return_metrics=True)[
-            0] if error == 'f1' else model.train(p, g, return_metrics=True)[1]
+        m = np.mean(model.j_k_fold_cv(p, g))
         errors.append(m)
 
     fig.add_trace(go.Scatter(

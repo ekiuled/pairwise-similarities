@@ -33,11 +33,15 @@ class Model():
             # x.append([sim, min(l1, l2), max(l1, l2)])
         return x
 
+    def get_numeric(self, pairs, groups):
+        """Extracts features from pairs and transforms labels to integers."""
+
+        return self.get_features_extra(pairs), list(map(int, groups))
+
     def j_k_fold_cv(self, pairs, groups, scoring='f1', j=4, k=5):
         """Performs J-K-fold CV and returns a list of J scores."""
 
-        X = self.get_features_extra(pairs)
-        y = list(map(int, groups))
+        X, y = self.get_numeric(pairs, groups)
         scores = []
         for _ in range(j):
             scores.append(np.mean(cross_validate(
@@ -47,8 +51,7 @@ class Model():
     def cross_validate(self, pairs, groups, scoring='f1'):
         """Performs a single run of K-fold CV and returns a list of scores."""
 
-        X = self.get_features_extra(pairs)
-        y = list(map(int, groups))
+        X, y = self.get_numeric(pairs, groups)
         return cross_validate(LogisticRegression(), X, y, scoring=scoring)['test_score']
 
     def train(self, pairs, groups, show_metrics=False, return_metrics=False):
@@ -60,8 +63,7 @@ class Model():
             List of computed metrics. 
         """
 
-        x = self.get_features_extra(pairs)
-        y = list(map(int, groups))
+        x, y = self.get_numeric(pairs, groups)
         x_train, x_test, y_train, y_test = train_test_split(
             x, y, random_state=1)
 
