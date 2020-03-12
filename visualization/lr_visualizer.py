@@ -107,28 +107,24 @@ def plot_dataset(pairs, groups, similarity, fig):
     return fig
 
 
-def plot_error(pairs, groups, similarity, fig, error='f1', range_ub=2000):
+def plot_error(pairs, groups, similarity, name, fig, error='f1', range_ub=2000):
     sizes = list(range(100, min(len(pairs), range_ub), 100))
     errors = []
     model = Model(similarity)
+    pairs, groups = model.get_numeric(pairs, groups)
 
     for n in sizes:
         p, _, g, _ = train_test_split(
             pairs, groups, train_size=n)
-        model.train(p, g, return_metrics=True)
-        m = np.mean(model.j_k_fold_cv(p, g))
+        m = np.mean(model.j_k_fold_cv(p, g, numeric=True))
         errors.append(m)
 
     fig.add_trace(go.Scatter(
         x=sizes,
         y=errors,
-        mode='lines+markers'
+        mode='lines+markers',
+        name=name
     ))
-
-    fig.update_layout(
-        xaxis_title="Dataset size",
-        yaxis_title="F1 score",
-    )
 
     return fig
 
@@ -144,7 +140,7 @@ def visualize_data_and_lr_decision_boundary(filename, similarity):
     fig.show()
 
 
-def visualize_error(filename, similarities, error='f1'):
+def visualize_error(filename, similarities, names, error='f1', title=''):
     errors = {'f1', 'log_loss'}
     if error not in errors:
         raise ValueError(
@@ -152,6 +148,12 @@ def visualize_error(filename, similarities, error='f1'):
 
     pairs, groups = parser.dataset_from_file(filename)
     fig = go.Figure()
-    for similarity in similarities:
-        fig = plot_error(pairs, groups, similarity, fig, error)
+    for similarity, name in zip(similarities, names):
+        fig = plot_error(pairs, groups, similarity, name, fig, error)
+
+    fig.update_layout(
+        title=title,
+        xaxis_title='Dataset size',
+        yaxis_title=error,
+    )
     fig.show()
