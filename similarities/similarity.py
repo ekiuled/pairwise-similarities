@@ -5,8 +5,14 @@ from scipy.optimize import linprog
 
 
 class Similarity(ABC):
-    def __init__(self, vectorized=False):
+    def __init__(self, vectorized=False, normalization=None):
         self.vectorized = vectorized
+        if normalization == 'full':
+            self.normalize = lambda s: normalize(s, True) 
+        elif normalization == 'partial':
+            self.normalize = lambda s: normalize(s)
+        else:
+            self.normalize = lambda s: s
 
     def run_similarity(self, data):
         """Applies the similarity function to each element of the list."""
@@ -20,7 +26,7 @@ class Similarity(ABC):
         else:
             for item in data:
                 similarities.append(self.similarity(
-                    normalize(item[0]), normalize(item[1])))
+                    self.normalize(item[0]), self.normalize(item[1])))
 
         return similarities
 
@@ -37,12 +43,12 @@ class Similarity(ABC):
             yval = y.get(key, '')
             if xval and yval:
                 if type(xval) is list:
-                    xlist = [normalize(val) for val in xval]
-                    ylist = [normalize(val) for val in yval]
+                    xlist = [self.normalize(val) for val in xval]
+                    ylist = [self.normalize(val) for val in yval]
                     result += self.composite_similarity(xlist, ylist) * (len(xval) + len(yval))
                 else:
-                    xval = normalize(xval)
-                    yval = normalize(yval)
+                    xval = self.normalize(xval)
+                    yval = self.normalize(yval)
                     result += self.similarity(xval, yval) * (len(xval) + len(yval))
                 length += len(xval) + len(yval)
 

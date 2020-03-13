@@ -7,8 +7,7 @@ from string import punctuation
 from collections import defaultdict
 
 
-def normalize(s):
-    #return s
+def normalize(s, remove_stopwords=False):
     tag_map = defaultdict(lambda: wordnet.NOUN)
     tag_map['J'] = wordnet.ADJ
     tag_map['V'] = wordnet.VERB
@@ -19,8 +18,10 @@ def normalize(s):
     lemmatizer = WordNetLemmatizer()
     filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]]) for token, tag in pos_tag(tokens) if not token in punctuation]
     
-    stop_words = set(stopwords.words('english'))
-    filtered = [w for w in tokens if not w in stop_words]
+    if remove_stopwords:
+        stop_words = set(stopwords.words('english'))
+        filtered = [w for w in tokens if not w in stop_words]
+
     return ' '.join(filtered)
 
 

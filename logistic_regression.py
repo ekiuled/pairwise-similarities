@@ -41,7 +41,7 @@ class Model():
     def j_k_fold_cv(self, pairs, groups, scoring='f1', j=4, k=5, numeric=False):
         """Performs J-K-fold CV and returns a list of J scores."""
 
-        X, y = pairs, groups if numeric else self.get_numeric(pairs, groups)
+        X, y = [pairs, groups] if numeric else self.get_numeric(pairs, groups)
         scores = []
         for _ in range(j):
             scores.append(np.mean(cross_validate(
