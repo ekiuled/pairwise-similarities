@@ -107,23 +107,25 @@ def plot_dataset(pairs, groups, similarity, fig):
     return fig
 
 
-def plot_error(pairs, groups, similarity, name, fig, error='f1', range_ub=2000):
+def plot_error(pairs, groups, similarity, name, fig, score='f1', range_ub=2000):
     sizes = list(range(100, min(len(pairs), range_ub), 100))
-    errors = []
+    scores = []
     model = Model(similarity)
     pairs, groups = model.get_numeric(pairs, groups)
 
     for n in sizes:
         p, _, g, _ = train_test_split(
             pairs, groups, train_size=n)
-        m = np.mean(model.j_k_fold_cv(p, g, numeric=True))
-        errors.append(m)
+        m = np.mean(model.j_k_fold_cv(p, g, scoring=score, numeric=True))
+        scores.append(m)
 
     fig.add_trace(go.Scatter(
         x=sizes,
-        y=errors,
+        y=scores,
         mode='lines+markers',
-        name=name
+        name=name,
+        hovertemplate='<b>' + name +
+        '</b><br>Size: %{x}<br>Metric: %{y:.4f} <extra></extra>'
     ))
 
     return fig
@@ -140,20 +142,22 @@ def visualize_data_and_lr_decision_boundary(filename, similarity):
     fig.show()
 
 
-def visualize_error(filename, similarities, names, error='f1', title=''):
-    errors = {'f1', 'log_loss'}
-    if error not in errors:
+def visualize_error(filename, similarities, names, score='f1', title='', height=900, width=1100):
+    scores = {'f1', 'neg_log_loss', 'precision', 'recall'}
+    if score not in scores:
         raise ValueError(
-            "visualize_error: error must be one of %r." % errors)
+            "visualize_error: score must be one of %r." % scores)
 
     pairs, groups = parser.dataset_from_file(filename)
     fig = go.Figure()
     for similarity, name in zip(similarities, names):
-        fig = plot_error(pairs, groups, similarity, name, fig, error)
+        fig = plot_error(pairs, groups, similarity, name, fig, score)
 
     fig.update_layout(
         title=title,
         xaxis_title='Dataset size',
-        yaxis_title=error,
+        yaxis_title=score,
+        height=height,
+        width=width,
     )
     fig.show()
