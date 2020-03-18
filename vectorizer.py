@@ -21,7 +21,11 @@ def vectorize(s):
 
     for line in s.splitlines():
         if line and line[0] == '@':
-            tag, line = line.split(maxsplit=1)
+            if len(line.split(maxsplit=1)) == 2:
+                tag, line = line.split(maxsplit=1)
+            else:
+                tag = line.split(maxsplit=1)[0]
+                line = ''
             if tag in composite_tags:
                 line = tag + ' ' + line
         tags[tag] += line + '\n'

@@ -9,6 +9,7 @@ from similarities.lsh_similarity import LSHSimilarity
 import dataset_parser as parser
 
 import numpy as np
+import scipy.stats as st
 
 
 class Model():
@@ -97,13 +98,13 @@ class Model():
 
 
 if __name__ == "__main__":
-    pairs, groups = parser.dataset_from_file('filtered.csv')
-    for vectorized in [False, True]:
-        print('Vectorized =', vectorized)
-        for name, similarity in zip(['LCS', 'COS', 'Lev', 'LSH'], [LCSSimilarity(vectorized=vectorized), COSSimilarity(vectorized=vectorized), LevenshteinSimilarity(vectorized=vectorized), LSHSimilarity(vectorized=vectorized)]):
-            model = Model(similarity)
-            scores = model.j_k_fold_cv(pairs, groups)
-            print('%s F1: %0.3f (+/- %0.3f)' % (name, np.mean(scores), np.std(scores) * 2))
-            #scores = model.cross_validate(pairs, groups)
-            #print('%s F1: %0.3f (+/- %0.32f)' % (name, np.mean(scores), np.std(scores) * 2))
+    pairs, groups = parser.dataset_from_file('data_clean.csv')
+    sims = [COSSimilarity(True, None), LCSSimilarity(True, None), LSHSimilarity(
+        True, None), LevenshteinSimilarity(False, None)]
+    names = ['COS', 'LCS', 'LSH', 'Lev']
 
+    for name, similarity in zip(names, sims):
+        model = Model(similarity)
+        scores = model.j_k_fold_cv(pairs, groups)
+        interval = st.t.interval(0.95, len(scores)-1, loc=np.mean(scores), scale=st.sem(scores))
+        print(f'{name} {np.mean(scores):.3f} +-{(interval[1] - interval[0])/2:.3f}')
