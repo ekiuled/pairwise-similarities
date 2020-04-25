@@ -100,4 +100,4 @@ if __name__ == '__main__':
     # print_statistics('datasets/all_pairs.csv')
     # print_statistics('datasets/dataset.csv')
 
-    visualizer.visualize_from_file('datasets/dataset.csv')
+    visualizer.visualize_from_file('dataset.csv')

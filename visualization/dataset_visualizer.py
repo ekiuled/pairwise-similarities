@@ -35,5 +35,15 @@ def visualize_from_file(filename):
     visualize(x, y)
 
 
+def visualize_len_from_file(filename):
+    """Plots a histogram of lenght distribution."""
+    
+    pairs, _ = parser.dataset_from_file(filename)
+    comments = [pair[0] for pair in pairs] + [pair[1] for pair in pairs]
+    x = list(map(len, comments))
+    hist_all(x)
+    plt.show()
+
+
 if __name__ == '__main__':
     visualize_from_file('filtered.csv')
