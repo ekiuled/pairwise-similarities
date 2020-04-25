@@ -5,6 +5,8 @@ from sklearn.linear_model import LogisticRegression
 from logistic_regression import Model
 from sklearn.model_selection import train_test_split
 import numpy as np
+from random import sample
+from timeit import default_timer as timer
 
 
 def plot_lr(pairs, groups, similarity, fig):
@@ -131,6 +133,29 @@ def plot_error(pairs, groups, similarity, name, fig, score='f1', range_ub=2000):
     return fig
 
 
+def plot_time(pairs, similarity, name, fig, range_ub=2000):
+    sizes = list(range(100, min(len(pairs), range_ub), 200))
+    scores = []
+
+    for n in sizes:
+        p = sample(pairs, n)
+        start = timer()
+        similarity.run_similarity(p)
+        end = timer()
+        scores.append(end - start)
+
+    fig.add_trace(go.Scatter(
+        x=sizes,
+        y=scores,
+        mode='lines+markers',
+        name=name,
+        hovertemplate='<b>' + name +
+        '</b><br>Size: %{x}<br>Time: %{y:.3f}s<extra></extra>'
+    ))
+
+    return fig
+
+
 def visualize_data_and_lr_decision_boundary(filename, similarity):
     pairs, groups = parser.dataset_from_file(filename)
 
@@ -160,4 +185,20 @@ def visualize_error(filename, similarities, names, score='f1', title='', height=
         height=height,
         width=width,
     )
+    fig.show()
+
+
+def visualize_time(filename, similarities, names, height=900, width=1100):
+    pairs, _ = parser.dataset_from_file(filename)
+    fig = go.Figure()
+
+    for similarity, name in zip(similarities, names):
+        fig = plot_time(pairs, similarity, name, fig)
+    
+    fig.update_layout(
+            xaxis_title='Dataset size',
+            yaxis_title='Time in seconds',
+            height=height,
+            width=width,
+        )
     fig.show()

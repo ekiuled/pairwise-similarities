@@ -71,6 +71,16 @@ def run_filter(file_in, file_out, num=None):
     visualizer.visualize_from_file(file_out)
 
 
+def randomized_filter(file_in, file_out):
+    data = parser.list_from_file(file_in)
+    data_neg = list(filter(lambda x: x[2] == '0', data))
+    data_pos = list(filter(lambda x: x[2] == '1', data))
+
+    size = len(data_pos)
+    data_neg_filtered = sample(data_neg, size)
+    parser.list_to_file(data_pos + data_neg_filtered, file_out)
+
+
 def print_statistics(filename):
     data = parser.list_from_file(filename)
     print('Filename:', filename)
@@ -86,8 +96,8 @@ if __name__ == '__main__':
     # run_filter('datasets/junit4_filtered.csv', 'datasets/junit4_filtered2.csv')
     # visualizer.visualize_from_file('datasets/filtered.csv')
 
-    # print_statistics('datasets/gson.csv')
-    # print_statistics('datasets/junit4.csv')
-    # print_statistics('datasets/mockito.csv')
-    # print_statistics('datasets/slf4j.csv')
-    print_statistics('datasets/filtered.csv')
+    # randomized_filter('datasets/all_pairs.csv', 'datasets/dataset.csv')
+    # print_statistics('datasets/all_pairs.csv')
+    # print_statistics('datasets/dataset.csv')
+
+    visualizer.visualize_from_file('datasets/dataset.csv')
