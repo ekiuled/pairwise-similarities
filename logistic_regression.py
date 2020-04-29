@@ -13,8 +13,9 @@ import scipy.stats as st
 
 
 class Model():
-    def __init__(self, similarity):
+    def __init__(self, similarity, extra_features=False):
         self.similarity = similarity
+        self.extra_features = extra_features
 
     def get_features(self, pairs):
         """Extracts similarity features and ground truth target values from a csv file."""
@@ -37,7 +38,7 @@ class Model():
     def get_numeric(self, pairs, groups):
         """Extracts features from pairs and transforms labels to integers."""
 
-        return self.get_features_extra(pairs), list(map(int, groups))
+        return self.get_features_extra(pairs) if self.extra_features else self.get_features(pairs), list(map(int, groups))
 
     def j_k_fold_cv(self, pairs, groups, scoring='f1', j=4, k=5, numeric=False):
         """Performs J-K-fold CV and returns a list of J scores."""
@@ -88,11 +89,16 @@ class Model():
         """Decision boundary coefficients."""
 
         w = self.model.coef_[0]
-        a = -w[0] / w[1]
-        return [a, -(self.model.intercept_[0]) / w[1]]
+        if len(w) == 1:
+            a = 0
+            b = -self.model.intercept_[0] / w[0]
+        else:
+            a = -w[0] / w[1]
+            b = -(self.model.intercept_[0]) / w[1]
+        return [a, b]
 
     def predict(self, pairs):
-        x = self.get_features_extra(pairs)
+        x = self.get_features_extra(pairs) if self.extra_features else self.get_features(pairs)
         y = self.model.predict(x)
         return y
 

@@ -14,8 +14,12 @@ def plot_lr(pairs, groups, similarity, fig):
     model.train(pairs, groups, show_metrics=True)
 
     a, b = model.coef()
-    xx = np.linspace(0, 1)
-    yy = a * xx + b
+    if a:
+        xx = np.linspace(0, 1)
+        yy = a * xx + b
+    else:
+        xx = [b, b]
+        yy = [0, 2000]
 
     fig.add_trace(go.Scatter(
         x=xx,
