@@ -10,8 +10,6 @@ class COSSimilarity(Similarity):
         vectorizer = CountVectorizer()
         try:
             embeddings = vectorizer.fit_transform([x, y])
-            print(vectorizer.get_feature_names())
-            print(embeddings.toarray())
         except ValueError:
             # Strings consisted of stopwords or numbers only,
             # usually happens in the @since tag
