@@ -1,16 +1,19 @@
 from similarities.similarity import Similarity
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
+#from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class COSSimilarity(Similarity):
     def similarity(self, x, y):
-        tfidf_vectorizer = TfidfVectorizer()
+        vectorizer = CountVectorizer()
         try:
-            tfidf_matrix = tfidf_vectorizer.fit_transform([x, y])
+            embeddings = vectorizer.fit_transform([x, y])
+            print(vectorizer.get_feature_names())
+            print(embeddings.toarray())
         except ValueError:
             # Strings consisted of stopwords or numbers only,
             # usually happens in the @since tag
             return x == y
-        return cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0, 0]
+        return cosine_similarity(embeddings[0:1], embeddings[1:2])[0, 0]
