@@ -1,7 +1,20 @@
 from similarities.similarity import Similarity
-from Levenshtein import ratio
+import difflib
+from string import punctuation
+
+table = str.maketrans('', '', punctuation)
 
 
 class LevenshteinSimilarity(Similarity):
     def similarity(self, x, y):
-        return ratio(x, y)
+        x = x.translate(table).split()
+        y = y.translate(table).split()
+        sm = difflib.SequenceMatcher(None, x, y)
+        blocks = sm.get_matching_blocks()[:-1]
+        matching = 0
+        x = list(map(len, x))
+        y = list(map(len, y))
+        for start, _, length in blocks:
+            matching += sum(x[start:start+length])
+        total = max(sum(x), sum(y))
+        return matching / total
