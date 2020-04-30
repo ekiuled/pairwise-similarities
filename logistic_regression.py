@@ -79,6 +79,7 @@ class Model():
                 print('Recall:', metrics.recall_score(y_test, y_pred))
                 print('F1 score:', metrics.f1_score(y_test, y_pred))
                 print('Log loss:', metrics.log_loss(y_test, y_pred))
+                print('Accuracy:', metrics.accuracy_score(y_test, y_pred))
 
             if return_metrics:
                 return [metrics.f1_score(y_test, y_pred), metrics.log_loss(y_test, y_pred)]
