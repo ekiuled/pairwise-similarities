@@ -6,6 +6,8 @@ from nltk.stem import WordNetLemmatizer
 from string import punctuation
 from collections import defaultdict
 
+table = str.maketrans('', '', punctuation)
+
 
 def normalize(s, remove_stopwords=False):
     tag_map = defaultdict(lambda: wordnet.NOUN)
@@ -16,8 +18,9 @@ def normalize(s, remove_stopwords=False):
     tokens = word_tokenize(s)
 
     lemmatizer = WordNetLemmatizer()
-    filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]]) for token, tag in pos_tag(tokens) if not token in punctuation]
-    
+    filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]])
+                for token, tag in pos_tag(tokens) if not token in punctuation]
+
     if remove_stopwords:
         stop_words = set(stopwords.words('english'))
         filtered = [w for w in tokens if not w in stop_words]
@@ -25,9 +28,5 @@ def normalize(s, remove_stopwords=False):
     return ' '.join(filtered)
 
 
-s = 'Asserts that two longs are equal. If they are not, an\n\
-AssertionError is thrown.\n\
-\n\
-\n\
-@param expected expected long value.\n\
-@param actual actual long value'
+def words(s):
+    return s.translate(table).split()

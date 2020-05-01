@@ -1,14 +1,12 @@
 from similarities.similarity import Similarity
 import difflib
-from string import punctuation
-
-table = str.maketrans('', '', punctuation)
+from normalizer import words
 
 
 class LevenshteinSimilarity(Similarity):
     def similarity(self, x, y):
-        x = x.translate(table).split()
-        y = y.translate(table).split()
+        x = words(x)
+        y = words(y)
         sm = difflib.SequenceMatcher(None, x, y)
         blocks = sm.get_matching_blocks()[:-1]
         matching = 0
