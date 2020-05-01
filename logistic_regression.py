@@ -82,7 +82,7 @@ class Model():
                 print('Accuracy:', metrics.accuracy_score(y_test, y_pred))
 
             if return_metrics:
-                return [metrics.f1_score(y_test, y_pred), metrics.log_loss(y_test, y_pred)]
+                return [metrics.f1_score(y_test, y_pred), metrics.log_loss(y_test, y_pred), metrics.accuracy_score(y_test, y_pred)]
 
         return []
 
