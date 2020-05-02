@@ -1,6 +1,7 @@
 from similarities.cos_similarity import COSSimilarity
 from similarities.lcs_similarity import LCSSimilarity
 from similarities.levenshtein_similarity import LevenshteinSimilarity
+from similarities.lsh_similarity import LSHSimilarity
 import dataset_parser as parser
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
@@ -42,7 +43,7 @@ def get_auc(filename, similarity):
 
 
 if __name__ == '__main__':
-    plot_roc('dataset.csv', LevenshteinSimilarity())
+    plot_roc('dataset.csv', LSHSimilarity())
     # for v in [False, True]:
     #     for n in [None, 'partial', 'full']:
     #         roc_auc = get_auc('dataset.csv', COSSimilarity(v, n))
