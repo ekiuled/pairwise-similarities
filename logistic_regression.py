@@ -43,17 +43,19 @@ class Model():
     def j_k_fold_cv(self, pairs, groups, scoring='f1', j=4, k=5, numeric=False):
         """Performs J-K-fold CV and returns a list of J scores."""
 
-        X, y = [pairs, groups] if numeric else self.get_numeric(pairs, groups)
+        X, y = [np.reshape(pairs, (-1, 1)),
+                groups] if numeric else self.get_numeric(pairs, groups)
         scores = []
         for _ in range(j):
             scores.append(np.mean(cross_validate(
                 LogisticRegression(), X, y, scoring=scoring, cv=StratifiedKFold(n_splits=k, shuffle=True))['test_score']))
         return scores
 
-    def cross_validate(self, pairs, groups, scoring='f1'):
+    def cross_validate(self, pairs, groups, scoring='f1', numeric=False):
         """Performs a single run of K-fold CV and returns a list of scores."""
 
-        X, y = self.get_numeric(pairs, groups)
+        X, y = [np.reshape(pairs, (-1, 1)),
+                groups] if numeric else self.get_numeric(pairs, groups)
         return cross_validate(LogisticRegression(), X, y, scoring=scoring)['test_score']
 
     def train(self, pairs, groups, show_metrics=False, return_metrics=False):
@@ -99,7 +101,8 @@ class Model():
         return [a, b]
 
     def predict(self, pairs):
-        x = self.get_features_extra(pairs) if self.extra_features else self.get_features(pairs)
+        x = self.get_features_extra(
+            pairs) if self.extra_features else self.get_features(pairs)
         y = self.model.predict(x)
         return y
 
@@ -113,5 +116,7 @@ if __name__ == "__main__":
     for name, similarity in zip(names, sims):
         model = Model(similarity)
         scores = model.j_k_fold_cv(pairs, groups)
-        interval = st.t.interval(0.95, len(scores)-1, loc=np.mean(scores), scale=st.sem(scores))
-        print(f'{name} {np.mean(scores):.3f} +-{(interval[1] - interval[0])/2:.3f}')
+        interval = st.norm.interval(
+            0.95, loc=np.mean(scores), scale=np.std(scores))
+        print(
+            f'{name} {np.mean(scores):.3f} +-{(interval[1] - interval[0])/2:.3f}')

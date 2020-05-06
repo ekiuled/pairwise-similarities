@@ -8,11 +8,14 @@ import matplotlib.pyplot as plt
 from numpy import argmax
 
 
-def plot_roc(filename, similarity):
+def plot_roc_from_file(filename, similarity):
     pairs, groups = parser.dataset_from_file(filename)
     groups = list(map(int, groups))
     scores = similarity.run_similarity(pairs)
+    plot_roc(scores, groups)
 
+
+def plot_roc(scores, groups):
     fpr, tpr, thresholds = roc_curve(groups, scores)
     roc_auc = auc(fpr, tpr)
     optimal_ix = argmax(tpr - fpr)
@@ -22,7 +25,8 @@ def plot_roc(filename, similarity):
              label='ROC curve (area = %0.3f)' % roc_auc)
     plt.plot([0, 1], [0, 1], color='navy', linestyle='--',
              label='ROC of a random classifier')
-    plt.plot(fpr[optimal_ix], tpr[optimal_ix], marker='*', label='Optimal threshold %0.3f' % threshold)
+    plt.plot(fpr[optimal_ix], tpr[optimal_ix], marker='*',
+             label='Optimal threshold %0.3f' % threshold)
 
     plt.xlim([-0.05, 1.0])
     plt.ylim([0.0, 1.05])
@@ -33,11 +37,14 @@ def plot_roc(filename, similarity):
     plt.show()
 
 
-def get_auc(filename, similarity):
+def get_auc_from_file(filename, similarity):
     pairs, groups = parser.dataset_from_file(filename)
     groups = list(map(int, groups))
     scores = similarity.run_similarity(pairs)
+    return get_auc(scores, [groups])
 
+
+def get_auc(scores, groups):
     fpr, tpr, _ = roc_curve(groups, scores)
     return auc(fpr, tpr)
 
