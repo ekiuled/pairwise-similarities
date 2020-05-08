@@ -49,6 +49,19 @@ def get_auc(scores, groups):
     return auc(fpr, tpr)
 
 
+def get_optimal_threshold_from_file(filename, similarity):
+    pairs, groups = parser.dataset_from_file(filename)
+    groups = list(map(int, groups))
+    scores = similarity.run_similarity(pairs)
+    return get_optimal_threshold(scores, groups)
+
+
+def get_optimal_threshold(scores, groups):
+    fpr, tpr, thresholds = roc_curve(groups, scores)
+    optimal_ix = argmax(tpr - fpr)
+    return thresholds[optimal_ix]
+
+
 if __name__ == '__main__':
     plot_roc('dataset.csv', LSHSimilarity())
     # for v in [False, True]:

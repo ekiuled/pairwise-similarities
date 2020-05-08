@@ -9,7 +9,7 @@ import scipy.stats as st
 from roc import get_auc
 
 
-def print_metrics(filename):
+def print_metrics(filename, scoring='f1'):
     models = [[] for _ in range(4)]
     names = []
     for vectorized in [False, True]:
@@ -24,7 +24,7 @@ def print_metrics(filename):
     for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
         for model, name in zip(algorithm, names):
             pairs, groups = parser.get_cache_from_file('cache/' + title + name)
-            scores = Model(model).j_k_fold_cv(pairs, groups, numeric=True)
+            scores = Model(model).j_k_fold_cv(pairs, groups, numeric=True, scoring=scoring)
             interval = st.norm.interval(
                 0.95, loc=np.mean(scores), scale=np.std(scores))
             print(
@@ -52,4 +52,4 @@ def print_metrics_roc_auc(filename):
 
 
 if __name__ == "__main__":
-    print_metrics_roc_auc('dataset.csv')
+    print_metrics('dataset.csv')
