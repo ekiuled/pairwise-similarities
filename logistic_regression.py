@@ -13,7 +13,7 @@ import scipy.stats as st
 
 
 class Model():
-    def __init__(self, similarity, extra_features=False):
+    def __init__(self, similarity=None, extra_features=False):
         self.similarity = similarity
         self.extra_features = extra_features
 
@@ -58,7 +58,7 @@ class Model():
                 groups] if numeric else self.get_numeric(pairs, groups)
         return cross_validate(LogisticRegression(), X, y, scoring=scoring)['test_score']
 
-    def train(self, pairs, groups, show_metrics=False, return_metrics=False):
+    def train(self, pairs, groups, show_metrics=False, return_metrics=False, numeric=False):
         """Trains logistic regression and returns the metrics.
 
         Returns
@@ -67,7 +67,8 @@ class Model():
             List of computed metrics. 
         """
 
-        x, y = self.get_numeric(pairs, groups)
+        x, y = [np.reshape(pairs, (-1, 1)),
+                groups] if numeric else self.get_numeric(pairs, groups)
         x_train, x_test, y_train, y_test = train_test_split(
             x, y, random_state=1)
 
