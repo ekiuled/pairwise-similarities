@@ -41,30 +41,24 @@ def print_metrics_from_file(filename, scoring='f1'):
     similarity_generator.map(func)
 
 
-def print_time(filename):
+def cache_time(filename):
     pairs, _ = parser.dataset_from_file(filename)
-    pairs = sample(pairs, 100)
 
     def func(model, name):
         scores = []
         for p in pairs:
             scores.append(timeit(lambda: model.run_similarity([p]), number=1))
-        interval = st.norm.interval(
-            0.95, loc=np.mean(scores), scale=np.std(scores))
-        print(
-            f'{np.mean(scores)*1000:.3f}±{(interval[1] - interval[0])/2*1000:.3f}')
+        with open('cache/time/' + name + '.txt', 'w+') as outfile:
+            outfile.write('\n'.join(str(item) for item in scores))
 
     similarity_generator.map(func)
 
-    lenghts = []
-    for p in pairs:
-        lenghts.append(len(p[0]))
-        lenghts.append(len(p[1]))
-    interval = st.norm.interval(
-        0.95, loc=np.mean(lenghts), scale=np.std(lenghts))
-    print()
-    print(
-        f'{np.mean(lenghts):.2f}±{(interval[1] - interval[0])/2:.2f}')
+
+def print_time_percentiles(q=50):
+    def func(times, name):
+        print(f'{np.percentile(times, q)*1000:.3f}')
+
+    similarity_generator.map_time_cache(func)
 
 
 def print_thresholds():
@@ -80,11 +74,4 @@ def print_thresholds():
 
 
 if __name__ == "__main__":
-    print('gson')
-    print_metrics_from_file('datasets/gson_dataset.csv')
-    print('junit4')
-    print_metrics_from_file('datasets/junit4_dataset.csv')
-    print('mockito')
-    print_metrics_from_file('datasets/mockito_dataset.csv')
-    print('slf4j')
-    print_metrics_from_file('datasets/slf4j_dataset.csv')
+    print_time_percentiles()

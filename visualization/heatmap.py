@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 
-def heatmap(title, save=False, show=True):
+def heatmap(title, save=False, show=True, norm=colors.PowerNorm(gamma=2)):
     f = open('stats/' + title + '.txt', 'r')
     labels = f.readlines()[:24]
     scores = [float(line.split('%')[0]) for line in labels]
@@ -17,7 +17,7 @@ def heatmap(title, save=False, show=True):
 
     fig, ax = plt.subplots(figsize=(16, 16))
     roffset = 0.8
-    ax.imshow(scores, norm=colors.PowerNorm(gamma=2), cmap='coolwarm', aspect=0.4, alpha=0.7,
+    ax.imshow(scores, norm=norm, cmap='coolwarm', aspect=0.4, alpha=0.7,
               extent=(-0.5+1+roffset, len(algs)-0.5+1+roffset, len(pipelines)-0.49+1, -0.49+1))
 
     for _, spine in ax.spines.items():
@@ -68,4 +68,5 @@ def heatmap(title, save=False, show=True):
 
 
 if __name__ == "__main__":
-    heatmap('roc_auc')
+    heatmap('time_50', True, False, colors.LogNorm())
+    heatmap('time_95', True, False, colors.LogNorm())

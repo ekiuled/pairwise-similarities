@@ -19,7 +19,7 @@ def map(func):
 
     for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
-            func(model, title + ' ' + suffix)
+            func(model, title + suffix)
 
 
 def map_cache(func):
@@ -39,3 +39,22 @@ def map_cache(func):
             pairs, groups = parser.get_cache_from_file(
                 'cache/' + title + suffix)
             func(title + ' ' + suffix, pairs, groups)
+
+
+def map_time_cache(func):
+    models = [[] for _ in range(4)]
+    suffixes = []
+    for vectorized in [False, True]:
+        for normalized in [None, 'partial', 'full']:
+            models[0].append(LCSSimilarity(vectorized, normalized))
+            models[1].append(COSSimilarity(vectorized, normalized))
+            models[2].append(LevenshteinSimilarity(vectorized, normalized))
+            models[3].append(LSHSimilarity(vectorized, normalized))
+            suffix = str(vectorized) + str(normalized)
+            suffixes.append(suffix)
+
+    for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
+        for model, suffix in zip(algorithm, suffixes):
+            times = [float(line)
+                     for line in open('cache/time/' + title + suffix + '.txt', 'r')]
+            func(times, title + suffix)
