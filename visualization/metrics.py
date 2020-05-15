@@ -28,6 +28,19 @@ def print_metrics_roc_auc():
     similarity_generator.map_cache(func)
 
 
+def print_metrics_from_file(filename, scoring='f1'):
+    def func(model, name):
+        pairs, groups = parser.dataset_from_file(filename)
+        scores = Model(model).j_k_fold_cv(
+            pairs, groups, scoring=scoring)
+        interval = st.norm.interval(
+            0.95, loc=np.mean(scores), scale=np.std(scores))
+        print(
+            f'{np.mean(scores)*100:.2f}%±{(interval[1] - interval[0])/2*100:.2f}%')
+
+    similarity_generator.map(func)
+
+
 def print_time(filename):
     pairs, _ = parser.dataset_from_file(filename)
     pairs = sample(pairs, 100)
@@ -67,4 +80,11 @@ def print_thresholds():
 
 
 if __name__ == "__main__":
-    print_time('data.csv')
+    print('gson')
+    print_metrics_from_file('datasets/gson_dataset.csv')
+    print('junit4')
+    print_metrics_from_file('datasets/junit4_dataset.csv')
+    print('mockito')
+    print_metrics_from_file('datasets/mockito_dataset.csv')
+    print('slf4j')
+    print_metrics_from_file('datasets/slf4j_dataset.csv')
