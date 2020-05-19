@@ -1,17 +1,10 @@
 from similarities.similarity import Similarity
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-#from sklearn.feature_extraction.text import TfidfVectorizer
+from scipy.spatial.distance import cosine
 from sklearn.feature_extraction.text import CountVectorizer
 
 
 class COSSimilarity(Similarity):
     def similarity(self, x, y):
-        vectorizer = CountVectorizer()
-        try:
-            embeddings = vectorizer.fit_transform([x, y])
-        except ValueError:
-            # Strings consisted of stopwords or numbers only,
-            # usually happens in the @since tag
-            return x == y
-        return cosine_similarity(embeddings[0:1], embeddings[1:2])[0, 0]
+        e1, e2 = CountVectorizer(token_pattern=r'(?u)\b\w+\b').fit_transform([x, y]).toarray()
+        return 1 - cosine(e1, e2)
