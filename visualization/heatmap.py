@@ -70,3 +70,6 @@ def heatmap(title, save=False, show=True, norm=colors.PowerNorm(gamma=2)):
 if __name__ == "__main__":
     heatmap('time_50', True, False, colors.LogNorm())
     heatmap('time_95', True, False, colors.LogNorm())
+    heatmap('accuracy_j_k_fold', True, False)
+    heatmap('f1_j_k_fold', True, False)
+    heatmap('roc_auc', True, False)
