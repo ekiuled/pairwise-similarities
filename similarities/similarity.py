@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
-from vectorizer import vectorize, composite_tag
+from segmentation import segment
 from normalizer import normalize
 from scipy.optimize import linprog
 
 
 class Similarity(ABC):
-    def __init__(self, vectorized=False, normalization=None):
-        self.vectorized = vectorized
+    def __init__(self, segmentation=False, normalization=None):
+        self.segmentation = segmentation
         if normalization == 'full':
-            self.normalize = lambda s: normalize(s, True) 
+            self.normalize = lambda s: normalize(s, True)
         elif normalization == 'partial':
             self.normalize = lambda s: normalize(s)
         else:
@@ -19,7 +19,7 @@ class Similarity(ABC):
 
         similarities = []
 
-        if self.vectorized:
+        if self.segmentation:
             for item in data:
                 similarities.append(
                     self.vectorized_similarity(item[0], item[1]))
@@ -33,24 +33,23 @@ class Similarity(ABC):
     def vectorized_similarity(self, x, y):
         """Parses two strings as vectors of JavaDoc tags and calculates their similarity."""
 
-        x = vectorize(x)
-        y = vectorize(y)
+        x = segment(x)
+        y = segment(y)
         result = 0
         length = 0
 
         for key in {**x, **y}.keys():
-            xval = x.get(key, '')
-            yval = y.get(key, '')
+            xval = x.get(key, None)
+            yval = y.get(key, None)
             if xval and yval:
-                if type(xval) is list:
-                    xlist = [self.normalize(val) for val in xval]
-                    ylist = [self.normalize(val) for val in yval]
-                    result += self.composite_similarity(xlist, ylist) * (len(xval) + len(yval))
+                xval = [self.normalize(val) for val in xval]
+                yval = [self.normalize(val) for val in yval]
+                len_sum = sum(list(map(len, xval))) + sum(list(map(len, yval)))
+                if len(xval) > 1 or len(yval) > 1:
+                    result += self.composite_similarity(xval, yval) * len_sum
                 else:
-                    xval = self.normalize(xval)
-                    yval = self.normalize(yval)
-                    result += self.similarity(xval, yval) * (len(xval) + len(yval))
-                length += len(xval) + len(yval)
+                    result += self.similarity(xval[0], yval[0]) * len_sum
+                length += len_sum
 
         return result / length if length else 0
 
