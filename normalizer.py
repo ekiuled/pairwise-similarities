@@ -1,10 +1,12 @@
-from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
-from string import punctuation
+from string import punctuation, whitespace
 from collections import defaultdict
+import re
+
+delimiter_pattern = '|'.join(map(re.escape, punctuation + whitespace))
 
 
 def normalize(s, remove_stopwords=False):
@@ -13,11 +15,11 @@ def normalize(s, remove_stopwords=False):
     tag_map['V'] = wordnet.VERB
     tag_map['R'] = wordnet.ADV
 
-    tokens = word_tokenize(s)
+    tokens = words(s)
 
     lemmatizer = WordNetLemmatizer()
     filtered = [lemmatizer.lemmatize(token.lower(), tag_map[tag[0]])
-                for token, tag in pos_tag(tokens) if not token in punctuation]
+                for token, tag in pos_tag(tokens)]
 
     if remove_stopwords:
         stop_words = set(stopwords.words('english'))
@@ -27,4 +29,4 @@ def normalize(s, remove_stopwords=False):
 
 
 def words(s):
-    return [token.lower() for token in word_tokenize(s) if not token in punctuation]
+    return [token.lower() for token in re.split(delimiter_pattern, s) if token]
