@@ -1,6 +1,6 @@
 from similarities.cos_similarity import COSSimilarity
 from similarities.lcs_similarity import LCSSimilarity
-from similarities.levenshtein_similarity import LevenshteinSimilarity
+from similarities.lev_similarity import LEVSimilarity
 from similarities.lsh_similarity import LSHSimilarity
 import dataset_parser as parser
 from sklearn.metrics import roc_curve, auc

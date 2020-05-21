@@ -4,7 +4,7 @@ import sklearn.metrics as metrics
 
 from similarities.lcs_similarity import LCSSimilarity
 from similarities.cos_similarity import COSSimilarity
-from similarities.levenshtein_similarity import LevenshteinSimilarity
+from similarities.lev_similarity import LEVSimilarity
 from similarities.lsh_similarity import LSHSimilarity
 import dataset_parser as parser
 
@@ -111,7 +111,7 @@ class Model():
 if __name__ == "__main__":
     pairs, groups = parser.dataset_from_file('data_clean.csv')
     sims = [COSSimilarity(True, None), LCSSimilarity(True, None), LSHSimilarity(
-        True, None), LevenshteinSimilarity(False, None)]
+        True, None), LEVSimilarity(False, None)]
     names = ['COS', 'LCS', 'LSH', 'Lev']
 
     for name, similarity in zip(names, sims):

@@ -1,6 +1,6 @@
 from similarities.lcs_similarity import LCSSimilarity
 from similarities.cos_similarity import COSSimilarity
-from similarities.levenshtein_similarity import LevenshteinSimilarity
+from similarities.lev_similarity import LEVSimilarity
 from similarities.lsh_similarity import LSHSimilarity
 from logistic_regression import Model
 import dataset_parser as parser
@@ -13,7 +13,7 @@ def cache(filename):
         for normalization in [None, 'partial', 'full']:
             models[0].append(LCSSimilarity(segmentation, normalization))
             models[1].append(COSSimilarity(segmentation, normalization))
-            models[2].append(LevenshteinSimilarity(segmentation, normalization))
+            models[2].append(LEVSimilarity(segmentation, normalization))
             models[3].append(LSHSimilarity(segmentation, normalization))
             suffix = str(segmentation) + str(normalization)
             names.append(suffix)
