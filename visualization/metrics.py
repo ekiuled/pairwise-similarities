@@ -48,7 +48,7 @@ def cache_time(filename):
         scores = []
         for p in pairs:
             scores.append(timeit(lambda: model.run_similarity([p]), number=1))
-        with open('cache/time/' + name + '.txt', 'w+') as outfile:
+        with open('cache/time/' + name, 'w+') as outfile:
             outfile.write('\n'.join(str(item) for item in scores))
 
     similarity_generator.map(func)
@@ -74,4 +74,4 @@ def print_thresholds():
 
 
 if __name__ == "__main__":
-    print_time_percentiles()
+    print_time_percentiles(93)

@@ -18,7 +18,7 @@ def cache(filename):
             suffix = str(segmentation) + str(normalization)
             names.append(suffix)
 
-    for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
+    for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, name in zip(algorithm, names):
             parser.cache_similarity_to_file(filename, 'cache/' + title + name, model)
 

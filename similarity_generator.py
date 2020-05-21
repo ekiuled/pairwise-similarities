@@ -17,7 +17,7 @@ def map(func):
             suffix = str(segmentation) + str(normalization)
             suffixes.append(suffix)
 
-    for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
+    for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
             func(model, title + suffix)
 
@@ -34,7 +34,7 @@ def map_cache(func):
             suffix = str(segmentation) + str(normalization)
             suffixes.append(suffix)
 
-    for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
+    for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
             pairs, groups = parser.get_cache_from_file(
                 'cache/' + title + suffix)
@@ -53,8 +53,8 @@ def map_time_cache(func):
             suffix = str(segmentation) + str(normalization)
             suffixes.append(suffix)
 
-    for algorithm, title in zip(models, ['LCS', 'COS', 'Levenshtein', 'LSH']):
+    for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
             times = [float(line)
-                     for line in open('cache/time/' + title + suffix + '.txt', 'r')]
+                     for line in open('cache/time/' + title + suffix, 'r')]
             func(times, title + suffix)
