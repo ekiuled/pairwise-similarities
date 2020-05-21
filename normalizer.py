@@ -6,8 +6,6 @@ from nltk.stem import WordNetLemmatizer
 from string import punctuation
 from collections import defaultdict
 
-table = str.maketrans('', '', punctuation)
-
 
 def normalize(s, remove_stopwords=False):
     tag_map = defaultdict(lambda: wordnet.NOUN)
@@ -29,4 +27,4 @@ def normalize(s, remove_stopwords=False):
 
 
 def words(s):
-    return s.translate(table).split()
+    return [token.lower() for token in word_tokenize(s) if not token in punctuation]

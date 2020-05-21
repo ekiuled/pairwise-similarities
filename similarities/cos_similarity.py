@@ -1,5 +1,4 @@
 from similarities.similarity import Similarity
-import numpy as np
 from scipy.spatial.distance import cosine
 from sklearn.feature_extraction.text import CountVectorizer
 

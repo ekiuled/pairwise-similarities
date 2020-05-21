@@ -1,9 +1,8 @@
 from similarities.similarity import Similarity
 import difflib
-from normalizer import words
 
 
-class LevenshteinSimilarity(Similarity):
+class LEVSimilarity(Similarity):
     def similarity(self, x, y):
         sm = difflib.SequenceMatcher(None, x, y)
         matching = sum([size for _, _, size in sm.get_matching_blocks()])
