@@ -21,22 +21,15 @@ def hist_all(x):
 
 
 def visualize(x, y):
+    """Plot length distribution histogram from a list of lengths and a list of labels."""
+
     hist_all(x)
     hist_positive(x, y)
     plt.show()
 
 
-def visualize_from_file(filename):
-    """Plots a histogram of LCS similarity distribution."""
-
-    pairs, y = parser.dataset_from_file(filename)
-    similarity = LCSSimilarity()
-    x = similarity.run_similarity(pairs)
-    visualize(x, y)
-
-
 def visualize_len_from_file(filename):
-    """Plots a histogram of lenght distribution."""
+    """Plot length distribution histogram."""
     
     pairs, _ = parser.dataset_from_file(filename)
     comments = [pair[0] for pair in pairs] + [pair[1] for pair in pairs]

@@ -10,6 +10,8 @@ delimiter_pattern = '|'.join(map(re.escape, punctuation + whitespace))
 
 
 def normalize(s, remove_stopwords=False):
+    """Lemmatize and remove punctuation and stopwords (optional)."""
+
     tag_map = defaultdict(lambda: wordnet.NOUN)
     tag_map['J'] = wordnet.ADJ
     tag_map['V'] = wordnet.VERB
@@ -29,4 +31,6 @@ def normalize(s, remove_stopwords=False):
 
 
 def words(s):
+    """Split a string into words (fast)."""
+
     return [token.lower() for token in re.split(delimiter_pattern, s) if token]

@@ -5,7 +5,6 @@ import roc
 import similarity_generator
 import dataset_parser as parser
 from timeit import timeit
-from random import sample
 
 
 def print_metrics(scoring='f1'):

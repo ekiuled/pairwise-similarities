@@ -4,6 +4,8 @@ import matplotlib.colors as colors
 
 
 def heatmap(title, save=False, show=True, norm=colors.PowerNorm(gamma=2)):
+    """Plot data from the stats/`title`.txt file as a heatmap table."""
+
     f = open('stats/' + title + '.txt', 'r')
     labels = f.readlines()[:24]
     scores = [float(line.split('%')[0]) for line in labels]

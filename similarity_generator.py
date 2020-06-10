@@ -6,6 +6,13 @@ import dataset_parser as parser
 
 
 def map(func):
+    """Apply a function to all combinations of algorithms and pipelines.
+    
+    Parameters
+    ----------
+    func : function(model, model_name)
+    """
+
     models = [[] for _ in range(4)]
     suffixes = []
     for segmentation in [False, True]:
@@ -23,6 +30,14 @@ def map(func):
 
 
 def map_cache(func):
+    """Apply a function to all combinations of algorithms and pipelines.
+    Values are read from cache.
+    
+    Parameters
+    ----------
+    func : function(model_name, pairs, labels)
+    """
+
     models = [[] for _ in range(4)]
     suffixes = []
     for segmentation in [False, True]:
@@ -42,6 +57,13 @@ def map_cache(func):
 
 
 def map_time_cache(func):
+    """Apply a function to the cached execution time list for all combinations of algorithms and pipelines.
+    
+    Parameters
+    ----------
+    func : function(time_list, model_name)
+    """
+
     models = [[] for _ in range(4)]
     suffixes = []
     for segmentation in [False, True]:

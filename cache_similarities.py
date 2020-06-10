@@ -7,6 +7,8 @@ import dataset_parser as parser
 
 
 def cache(filename):
+    """Cache all possible combinations of algorithms and pipelines applied to the input file into the cache folder."""
+
     models = [[] for _ in range(4)]
     names = []
     for segmentation in [False, True]:

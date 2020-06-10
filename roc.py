@@ -1,7 +1,3 @@
-from similarities.cos_similarity import COSSimilarity
-from similarities.lcs_similarity import LCSSimilarity
-from similarities.lev_similarity import LEVSimilarity
-from similarities.lsh_similarity import LSHSimilarity
 import dataset_parser as parser
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
@@ -16,6 +12,8 @@ def plot_roc_from_file(filename, similarity):
 
 
 def plot_roc(scores, groups):
+    """Plot ROC curve from a list of predicted scores and a list of labels."""
+
     fpr, tpr, thresholds = roc_curve(groups, scores)
     roc_auc = auc(fpr, tpr)
     optimal_ix = argmax(tpr - fpr)
@@ -45,6 +43,8 @@ def get_auc_from_file(filename, similarity):
 
 
 def get_auc(scores, groups):
+    """Get ROC AUC from a list of predicted scores and a list of labels."""
+
     fpr, tpr, _ = roc_curve(groups, scores)
     return auc(fpr, tpr)
 
@@ -57,14 +57,8 @@ def get_optimal_threshold_from_file(filename, similarity):
 
 
 def get_optimal_threshold(scores, groups):
+    """Get a threshold with maximum value of Youden's index."""
+
     fpr, tpr, thresholds = roc_curve(groups, scores)
     optimal_ix = argmax(tpr - fpr)
     return thresholds[optimal_ix]
-
-
-if __name__ == '__main__':
-    plot_roc('dataset.csv', LSHSimilarity())
-    # for v in [False, True]:
-    #     for n in [None, 'partial', 'full']:
-    #         roc_auc = get_auc('dataset.csv', COSSimilarity(v, n))
-    #         print('v =', v, ', n = ', n, ', ROC AUC =', f'{roc_auc: .4f}')

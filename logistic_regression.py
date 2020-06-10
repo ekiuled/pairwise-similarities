@@ -1,15 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split, cross_validate, StratifiedKFold
 import sklearn.metrics as metrics
-
-from similarities.lcs_similarity import LCSSimilarity
-from similarities.cos_similarity import COSSimilarity
-from similarities.lev_similarity import LEVSimilarity
-from similarities.lsh_similarity import LSHSimilarity
-import dataset_parser as parser
-
 import numpy as np
-import scipy.stats as st
 
 
 class Model():
@@ -25,7 +17,7 @@ class Model():
         return x
 
     def get_features_extra(self, pairs):
-        """Extracts similarity and lenght features and ground truth target values from a csv file."""
+        """Extracts similarity and length features and ground truth target values from a csv file."""
 
         similarities = self.similarity.run_similarity(pairs)
         x = []
@@ -106,18 +98,3 @@ class Model():
             pairs) if self.extra_features else self.get_features(pairs)
         y = self.model.predict(x)
         return y
-
-
-if __name__ == "__main__":
-    pairs, groups = parser.dataset_from_file('data_clean.csv')
-    sims = [COSSimilarity(True, None), LCSSimilarity(True, None), LSHSimilarity(
-        True, None), LEVSimilarity(False, None)]
-    names = ['COS', 'LCS', 'LSH', 'Lev']
-
-    for name, similarity in zip(names, sims):
-        model = Model(similarity)
-        scores = model.j_k_fold_cv(pairs, groups)
-        interval = st.norm.interval(
-            0.95, loc=np.mean(scores), scale=np.std(scores))
-        print(
-            f'{name} {np.mean(scores):.3f} +-{(interval[1] - interval[0])/2:.3f}')

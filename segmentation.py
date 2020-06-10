@@ -3,7 +3,7 @@ from scipy.optimize import linprog
 
 
 def segment(s):
-    """Parses input into a dictionary of JavaDoc tags.
+    """Parse input string into a dictionary of JavaDoc tags.
 
     Parameters
     ----------
