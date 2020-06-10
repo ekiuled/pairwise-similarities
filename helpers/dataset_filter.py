@@ -1,4 +1,4 @@
-import dataset_parser as parser
+from helpers import dataset_parser as parser
 from random import sample
 
 

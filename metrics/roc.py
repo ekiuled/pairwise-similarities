@@ -1,4 +1,4 @@
-import dataset_parser as parser
+from helpers import dataset_parser as parser
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 from numpy import argmax

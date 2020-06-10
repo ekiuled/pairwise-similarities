@@ -3,7 +3,7 @@ from similarities.cos_similarity import COSSimilarity
 from similarities.lev_similarity import LEVSimilarity
 from similarities.lsh_similarity import LSHSimilarity
 from logistic_regression import Model
-import dataset_parser as parser
+from helpers import dataset_parser as parser
 
 
 def cache(filename):

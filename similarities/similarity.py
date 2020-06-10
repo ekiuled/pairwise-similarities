@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from segmentation import segment
-from normalizer import normalize
+from pipeline.segmentation import segment
+from pipeline.normalizer import normalize
 from scipy.optimize import linprog
 
 

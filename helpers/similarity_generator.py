@@ -2,7 +2,7 @@ from similarities.lcs_similarity import LCSSimilarity
 from similarities.cos_similarity import COSSimilarity
 from similarities.lev_similarity import LEVSimilarity
 from similarities.lsh_similarity import LSHSimilarity
-import dataset_parser as parser
+from helpers import dataset_parser as parser
 
 
 def map(func):

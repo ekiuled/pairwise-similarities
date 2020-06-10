@@ -1,6 +1,6 @@
 import csv
 import matplotlib.pyplot as plt
-import dataset_parser as parser
+from helpers import dataset_parser as parser
 from similarities.lcs_similarity import LCSSimilarity
 from math import log
 

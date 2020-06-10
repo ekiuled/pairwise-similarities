@@ -1,9 +1,9 @@
 from logistic_regression import Model
 import numpy as np
 import scipy.stats as st
-import roc
-import similarity_generator
-import dataset_parser as parser
+from metrics import roc
+from helpers import similarity_generator
+from helpers import dataset_parser as parser
 from timeit import timeit
 
 
