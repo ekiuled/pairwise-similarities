@@ -4,6 +4,8 @@ from normalizer import words
 
 
 class LSHSimilarity(Similarity):
+    """Locality sensitive hashing similarity."""
+
     def similarity(self, x, y):
         n = 100
         bands = 50

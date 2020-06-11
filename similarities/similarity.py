@@ -5,6 +5,12 @@ from scipy.optimize import linprog
 
 
 class Similarity(ABC):
+    """Similarity base class. 
+    
+    Override `similarity(x, y)` method for customization.
+    Call `run_similarity` on a list of pairs to get a list of similarities.
+    """
+
     def __init__(self, segmentation=False, normalization=None):
         self.segmentation = segmentation
         if normalization == 'full':
@@ -15,7 +21,7 @@ class Similarity(ABC):
             self.normalize = lambda s: s
 
     def run_similarity(self, data):
-        """Applies the similarity function to each element of the list."""
+        """Apply the similarity function to each element of the list."""
 
         similarities = []
 
@@ -31,7 +37,7 @@ class Similarity(ABC):
         return similarities
 
     def vectorized_similarity(self, x, y):
-        """Parses two strings as vectors of JavaDoc tags and calculates their similarity."""
+        """Parse two strings as vectors of JavaDoc tags and calculate their similarity."""
 
         x = segment(x)
         y = segment(y)
@@ -54,7 +60,7 @@ class Similarity(ABC):
         return result / length if length else 0
 
     def composite_similarity(self, x, y):
-        """Matches optimally elements of two lists and calculates their similarity."""
+        """Match optimally elements of two lists and calculate their similarity."""
 
         s = [-self.similarity(p, q) for p in x for q in y]
         n = len(x)
@@ -69,6 +75,6 @@ class Similarity(ABC):
 
     @abstractmethod
     def similarity(self, x, y):
-        """Calculates raw similarity of two strings."""
+        """Calculate raw similarity of two strings."""
 
         pass

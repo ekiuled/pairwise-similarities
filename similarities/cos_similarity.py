@@ -4,6 +4,8 @@ from normalizer import words
 
 
 class COSSimilarity(Similarity):
+    """Cosine TF-based similarity."""
+
     def similarity(self, x, y):
         d = {}
         wx = words(x)

@@ -4,6 +4,8 @@ from normalizer import words
 
 
 class LCSSimilarity(Similarity):
+    """Longest common subsequence token-based similarity."""
+
     def similarity(self, x, y):
         x = words(x)
         y = words(y)
