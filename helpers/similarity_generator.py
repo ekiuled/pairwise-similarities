@@ -51,9 +51,9 @@ def map_cache(func):
 
     for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
-            pairs, groups = parser.get_cache_from_file(
+            pairs, labels = parser.get_cache_from_file(
                 'cache/' + title + suffix)
-            func(title + ' ' + suffix, pairs, groups)
+            func(title + ' ' + suffix, pairs, labels)
 
 
 def map_time_cache(func):

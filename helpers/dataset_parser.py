@@ -77,8 +77,8 @@ def get_cache_from_file(filename):
     """Read cached similarities and labels into two lists."""
 
     data = list_from_file(filename)
-    pairs, groups = list(map(list, zip(*data)))
-    return list(map(float, pairs)), list(map(int, groups))
+    pairs, labels = list(map(list, zip(*data)))
+    return list(map(float, pairs)), list(map(int, labels))
 
 
 def parse(filename, postfix=''):

@@ -8,9 +8,9 @@ from timeit import timeit
 
 
 def print_metrics(scoring='f1'):
-    def func(name, pairs, groups):
+    def func(name, pairs, labels):
         scores = Model().j_k_fold_cv(
-            pairs, groups, numeric=True, scoring=scoring)
+            pairs, labels, numeric=True, scoring=scoring)
         interval = st.norm.interval(
             0.95, loc=np.mean(scores), scale=np.std(scores))
         print(
@@ -20,8 +20,8 @@ def print_metrics(scoring='f1'):
 
 
 def print_metrics_roc_auc():
-    def func(name, pairs, groups):
-        roc_auc = roc.get_auc(pairs, groups)
+    def func(name, pairs, labels):
+        roc_auc = roc.get_auc(pairs, labels)
         print(f'{roc_auc:.5f}')
 
     similarity_generator.map_cache(func)
@@ -29,9 +29,9 @@ def print_metrics_roc_auc():
 
 def print_metrics_from_file(filename, scoring='f1'):
     def func(model, name):
-        pairs, groups = parser.dataset_from_file(filename)
+        pairs, labels = parser.dataset_from_file(filename)
         scores = Model(model).j_k_fold_cv(
-            pairs, groups, scoring=scoring)
+            pairs, labels, scoring=scoring)
         interval = st.norm.interval(
             0.95, loc=np.mean(scores), scale=np.std(scores))
         print(
@@ -61,13 +61,13 @@ def print_time_percentiles(q=50):
 
 
 def print_thresholds():
-    def log_reg_threshold(pairs, groups):
+    def log_reg_threshold(pairs, labels):
         m = Model()
-        m.train(pairs, groups, numeric=True)
+        m.train(pairs, labels, numeric=True)
         return m.coef()[1]
 
-    def func(name, pairs, groups):
-        print(f'{name} {log_reg_threshold(pairs, groups):.3f} {roc.get_optimal_threshold(pairs, groups):.3f}')
+    def func(name, pairs, labels):
+        print(f'{name} {log_reg_threshold(pairs, labels):.3f} {roc.get_optimal_threshold(pairs, labels):.3f}')
 
     similarity_generator.map_cache(func)
 
