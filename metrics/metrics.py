@@ -1,76 +1,52 @@
-from logistic_regression import Model
+from helpers import similarity_generator, dataset_parser
+from similarities.similarity import Similarity
+from sklearn.metrics import accuracy_score, f1_score, roc_curve, auc
+from sklearn.model_selection import train_test_split
 import numpy as np
-import scipy.stats as st
-from metrics import roc
-from helpers import similarity_generator
-from helpers import dataset_parser as parser
-from timeit import timeit
 
 
-def print_metrics(scoring='f1'):
-    def func(name, pairs, labels):
-        scores = Model().j_k_fold_cv(
-            pairs, labels, numeric=True, scoring=scoring)
-        interval = st.norm.interval(
-            0.95, loc=np.mean(scores), scale=np.std(scores))
-        print(
-            f'{np.mean(scores)*100:.2f}%±{(interval[1] - interval[0])/2*100:.2f}%')
-
-    similarity_generator.map_cache(func)
+def cached(func):
+    def wrapper(filename, *args, **kwargs):
+        scores, labels = dataset_parser.get_cache_from_file(filename)
+        return func(labels, scores, *args, **kwargs)
+    return wrapper
 
 
-def print_metrics_roc_auc():
-    def func(name, pairs, labels):
-        roc_auc = roc.get_auc(pairs, labels)
-        print(f'{roc_auc:.5f}')
-
-    similarity_generator.map_cache(func)
-
-
-def print_metrics_from_file(filename, scoring='f1'):
-    def func(model, name):
-        pairs, labels = parser.dataset_from_file(filename)
-        scores = Model(model).j_k_fold_cv(
-            pairs, labels, scoring=scoring)
-        interval = st.norm.interval(
-            0.95, loc=np.mean(scores), scale=np.std(scores))
-        print(
-            f'{np.mean(scores)*100:.2f}%±{(interval[1] - interval[0])/2*100:.2f}%')
-
-    similarity_generator.map(func)
+def calculated(func):
+    def wrapper(filename, similarity, *args, **kwargs):
+        pairs, labels = dataset_parser.dataset_from_file(filename)
+        scores = similarity.run_similarity(pairs)
+        return func(labels, scores, *args, **kwargs)
+    return wrapper
 
 
-def cache_time(filename):
-    pairs, _ = parser.dataset_from_file(filename)
-
-    def func(model, name):
-        scores = []
-        for p in pairs:
-            scores.append(timeit(lambda: model.run_similarity([p]), number=1))
-        with open('cache/time/' + name, 'w+') as outfile:
-            outfile.write('\n'.join(str(item) for item in scores))
-
-    similarity_generator.map(func)
+def test_set(func):
+    def wrapper(filename, similarity, *args, **kwargs):
+        pairs, labels = dataset_parser.dataset_from_file(filename)
+        x_train, x_test, y_train, y_test = train_test_split(pairs, labels, test_size=0.1, random_state=42, stratify=labels)
+        if hasattr(similarity, 'train'):
+            similarity.train(x_train, y_train)
+        y_pred = similarity.run_similarity(x_test)
+        return func(y_test, y_pred, *args, **kwargs)
+    return wrapper
 
 
-def print_time_percentiles(q=50):
-    def func(times, name):
-        print(f'{np.percentile(times, q)*1000:.3f}')
+@test_set
+def get_metrics(labels, scores, metric):
+    """Get metric and optimal threshold."""
 
-    similarity_generator.map_time_cache(func)
+    fpr, tpr, thresholds = roc_curve(labels, scores)
 
-
-def print_thresholds():
-    def log_reg_threshold(pairs, labels):
-        m = Model()
-        m.train(pairs, labels, numeric=True)
-        return m.coef()[1]
-
-    def func(name, pairs, labels):
-        print(f'{name} {log_reg_threshold(pairs, labels):.3f} {roc.get_optimal_threshold(pairs, labels):.3f}')
-
-    similarity_generator.map_cache(func)
-
-
-if __name__ == "__main__":
-    print_time_percentiles(93)
+    if metric == 'roc':
+        optimal_ix = np.argmax(tpr - fpr)
+        return auc(fpr, tpr), thresholds[optimal_ix]
+    elif metric == 'accuracy' or metric == 'f1':
+        metrics = []
+        metric_func = accuracy_score if metric == 'accuracy' else f1_score
+        for threshold in thresholds:
+            predictions = np.greater_equal(scores, threshold).astype(int)
+            metrics.append(metric_func(labels, predictions))
+        optimal_ix = np.argmax(metrics)
+        return metrics[optimal_ix], thresholds[optimal_ix]
+    else:
+        raise ValueError('Metric must be roc, accuracy or f1.')

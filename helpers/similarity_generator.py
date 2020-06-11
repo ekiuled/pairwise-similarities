@@ -5,12 +5,13 @@ from similarities.lsh_similarity import LSHSimilarity
 from helpers import dataset_parser as parser
 
 
-def map(func):
-    """Apply a function to all combinations of algorithms and pipelines.
+def all_similarities():
+    """Yield all combinations of algorithms and pipelines.
     
-    Parameters
-    ----------
-    func : function(model, model_name)
+    Yields
+    ------
+    tuple
+        Title and similarity.
     """
 
     models = [[] for _ in range(4)]
@@ -26,16 +27,16 @@ def map(func):
 
     for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
-            func(model, title + suffix)
+            yield title + suffix, model
 
 
-def map_cache(func):
-    """Apply a function to all combinations of algorithms and pipelines.
-    Values are read from cache.
+def all_similarities_cached():
+    """Yield cached values for all combinations of algorithms and pipelines.
     
-    Parameters
-    ----------
-    func : function(model_name, pairs, labels)
+    Yields
+    ------
+    tuple
+        Similarity title, similarity scores and labels.
     """
 
     models = [[] for _ in range(4)]
@@ -51,17 +52,18 @@ def map_cache(func):
 
     for algorithm, title in zip(models, ['LCS', 'COS', 'LEV', 'LSH']):
         for model, suffix in zip(algorithm, suffixes):
-            pairs, labels = parser.get_cache_from_file(
+            scores, labels = parser.get_cache_from_file(
                 'cache/' + title + suffix)
-            func(title + ' ' + suffix, pairs, labels)
+            yield title + ' ' + suffix, scores, labels
 
 
-def map_time_cache(func):
-    """Apply a function to the cached execution time list for all combinations of algorithms and pipelines.
+def similarity_time_cached():
+    """Yield cached execution time for all combinations of algorithms and pipelines.
     
-    Parameters
-    ----------
-    func : function(time_list, model_name)
+    Yields
+    ------
+    tuple
+        Similarity title and time list.
     """
 
     models = [[] for _ in range(4)]
@@ -79,4 +81,4 @@ def map_time_cache(func):
         for model, suffix in zip(algorithm, suffixes):
             times = [float(line)
                      for line in open('cache/time/' + title + suffix, 'r')]
-            func(times, title + suffix)
+            yield title + suffix, times
