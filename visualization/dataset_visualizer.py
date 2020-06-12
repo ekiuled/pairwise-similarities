@@ -1,7 +1,7 @@
 import csv
 import matplotlib.pyplot as plt
 from helpers import dataset_parser as parser
-from similarities.lcs_similarity import LCSSimilarity
+from similarities.lcs import LCSSimilarity
 from math import log
 
 

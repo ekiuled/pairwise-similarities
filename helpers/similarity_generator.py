@@ -1,7 +1,7 @@
-from similarities.lcs_similarity import LCSSimilarity
-from similarities.cos_similarity import COSSimilarity
-from similarities.lev_similarity import LEVSimilarity
-from similarities.lsh_similarity import LSHSimilarity
+from similarities.lcs import LCSSimilarity
+from similarities.cos import COSSimilarity
+from similarities.lev import LEVSimilarity
+from similarities.lsh import LSHSimilarity
 from helpers import dataset_parser as parser
 
 
