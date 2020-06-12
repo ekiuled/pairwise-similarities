@@ -8,7 +8,7 @@ class WMDSimilarity(Similarity):
     """Word mover's distance similarity."""
 
     def __init__(self):
-        """Segmentation and normalization are not allowed in Siamese similarity."""
+        """Segmentation and normalization are not allowed in WMD similarity."""
 
         super().__init__()
         self.embedding_dimension = 50
@@ -26,4 +26,4 @@ class WMDSimilarity(Similarity):
         comments = list(map(text_to_word_sequence, comments))
         # Train word2vec embeddings
         self.word2vec = Word2Vec(comments, min_count=1, size=self.embedding_dimension)
-
+        super().train(pairs, labels)

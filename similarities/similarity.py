@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from pipeline.segmentation import segment
 from pipeline.normalizer import normalize
 from scipy.optimize import linprog
+from sklearn.metrics import accuracy_score
+import numpy as np
 
 
 class Similarity(ABC):
     """Similarity base class. 
-    
+
     Override `similarity(x, y)` method for customization.
     Call `run_similarity` on a list of pairs to get a list of similarities.
     """
@@ -20,6 +22,24 @@ class Similarity(ABC):
         else:
             self.normalize = lambda s: s
 
+    def train(self, pairs, labels):
+        """Calculate optimal threshold."""
+
+        scores = self.run_similarity(pairs)
+        thresholds = sorted(set(scores))
+        thresholds.append(thresholds[-1] + 1)
+        metrics = []
+        for threshold in thresholds:
+            predictions = np.greater_equal(scores, threshold).astype(int)
+            metrics.append(accuracy_score(labels, predictions))
+        optimal_ix = np.argmax(metrics)
+        self.threshold = thresholds[optimal_ix]
+
+    def predict(self, scores):
+        """Predict binary labels."""
+
+        return np.greater_equal(scores, self.threshold).astype(int)
+
     def run_similarity(self, pairs):
         """Apply the similarity function to each element of the list."""
 
@@ -27,12 +47,10 @@ class Similarity(ABC):
 
         if self.segmentation:
             for pair in pairs:
-                similarities.append(
-                    self.vectorized_similarity(pair[0], pair[1]))
+                similarities.append(self.vectorized_similarity(pair[0], pair[1]))
         else:
             for pair in pairs:
-                similarities.append(self.similarity(
-                    self.normalize(pair[0]), self.normalize(pair[1])))
+                similarities.append(self.similarity(self.normalize(pair[0]), self.normalize(pair[1])))
 
         return similarities
 

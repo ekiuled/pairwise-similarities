@@ -34,9 +34,7 @@ class SiameseSimilarity(Similarity):
         """Predict similarity for each pair."""
 
         comments1, comments2, word_counts = self.features(pairs)
-        if not hasattr(self, 'model'):
-            raise ValueError('running neural network without training.')
-        return list(self.model.predict([comments1, comments2, word_counts], verbose=1).ravel())
+        return list(self.model.predict([comments1, comments2, word_counts]).ravel())
 
     def train(self, pairs, labels):
         """Define and train the neural network."""
@@ -87,13 +85,13 @@ class SiameseSimilarity(Similarity):
         self.model = Model(inputs=[input1, input2, input3], outputs=output)
         self.model.compile(loss='binary_crossentropy', optimizer='nadam', metrics=['acc'])
         # Define early stopping callback
-        es = EarlyStopping(verbose=1, patience=3)
+        es = EarlyStopping(patience=3)
 
         # Extract features from pairs
         comments1, comments2, word_counts = self.features(pairs)
         # Train the model
-        self.model.fit([comments1, comments2, word_counts], labels, epochs=self.epochs, validation_split=0.1, callbacks=[es])
-        
+        self.model.fit([comments1, comments2, word_counts], labels, epochs=self.epochs, validation_split=0.1, callbacks=[es], verbose=0)
+        super().train(pairs, labels)
 
     def features(self, pairs):
         """Get features from comment pairs: tokenized sequences and word counts."""
