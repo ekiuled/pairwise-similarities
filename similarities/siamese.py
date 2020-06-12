@@ -2,6 +2,7 @@ from similarities.similarity import Similarity
 from gensim.models import Word2Vec
 from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 from keras.preprocessing.sequence import pad_sequences
+from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Input, LSTM, Dropout, Bidirectional
 from keras.layers.normalization import BatchNormalization
 from keras.layers.embeddings import Embedding
@@ -24,7 +25,7 @@ class SiameseSimilarity(Similarity):
         self.rate_drop_lstm = 0.17
         self.rate_drop_dense = 0.25
         self.activation_function = 'relu'
-        self.epochs = 25
+        self.epochs = 20
 
     def similarity(self, x, y):
         return self.run_similarity([x, y])
@@ -85,11 +86,13 @@ class SiameseSimilarity(Similarity):
         # Initialize the model
         self.model = Model(inputs=[input1, input2, input3], outputs=output)
         self.model.compile(loss='binary_crossentropy', optimizer='nadam', metrics=['acc'])
+        # Define early stopping callback
+        es = EarlyStopping(verbose=1, patience=3)
 
         # Extract features from pairs
         comments1, comments2, word_counts = self.features(pairs)
         # Train the model
-        self.model.fit([comments1, comments2, word_counts], labels, epochs=self.epochs)
+        self.model.fit([comments1, comments2, word_counts], labels, epochs=self.epochs, validation_split=0.1, callbacks=[es])
         
 
     def features(self, pairs):
