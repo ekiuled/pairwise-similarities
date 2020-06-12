@@ -20,19 +20,19 @@ class Similarity(ABC):
         else:
             self.normalize = lambda s: s
 
-    def run_similarity(self, data):
+    def run_similarity(self, pairs):
         """Apply the similarity function to each element of the list."""
 
         similarities = []
 
         if self.segmentation:
-            for item in data:
+            for pair in pairs:
                 similarities.append(
-                    self.vectorized_similarity(item[0], item[1]))
+                    self.vectorized_similarity(pair[0], pair[1]))
         else:
-            for item in data:
+            for pair in pairs:
                 similarities.append(self.similarity(
-                    self.normalize(item[0]), self.normalize(item[1])))
+                    self.normalize(pair[0]), self.normalize(pair[1])))
 
         return similarities
 

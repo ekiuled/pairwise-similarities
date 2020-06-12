@@ -49,4 +49,4 @@ def get_metrics(labels, scores, metric):
         optimal_ix = np.argmax(metrics)
         return metrics[optimal_ix], thresholds[optimal_ix]
     else:
-        raise ValueError('Metric must be roc, accuracy or f1.')
+        raise ValueError('`metric` must be roc, accuracy or f1.')
