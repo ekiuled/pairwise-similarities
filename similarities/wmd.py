@@ -18,7 +18,7 @@ class WMDSimilarity(Similarity):
         y = text_to_word_sequence(y)
         return -self.word2vec.wv.wmdistance(x, y)
 
-    def train(self, pairs, labels):
+    def train(self, pairs, labels, verbose=False):
         """Train word2vec embeddings."""
 
         # Flatten list of comment pairs
@@ -26,4 +26,4 @@ class WMDSimilarity(Similarity):
         comments = list(map(text_to_word_sequence, comments))
         # Train word2vec embeddings
         self.word2vec = Word2Vec(comments, min_count=1, size=self.embedding_dimension)
-        super().train(pairs, labels)
+        super().train(pairs, labels, verbose)

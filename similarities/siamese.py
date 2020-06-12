@@ -36,7 +36,7 @@ class SiameseSimilarity(Similarity):
         comments1, comments2, word_counts = self.features(pairs)
         return list(self.model.predict([comments1, comments2, word_counts]).ravel())
 
-    def train(self, pairs, labels):
+    def train(self, pairs, labels, verbose=False):
         """Define and train the neural network."""
 
         # Flatten list of comment pairs
@@ -91,7 +91,7 @@ class SiameseSimilarity(Similarity):
         comments1, comments2, word_counts = self.features(pairs)
         # Train the model
         self.model.fit([comments1, comments2, word_counts], labels, epochs=self.epochs, validation_split=0.1, callbacks=[es], verbose=0)
-        super().train(pairs, labels)
+        super().train(pairs, labels, verbose)
 
     def features(self, pairs):
         """Get features from comment pairs: tokenized sequences and word counts."""

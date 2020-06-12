@@ -22,7 +22,7 @@ class Similarity(ABC):
         else:
             self.normalize = lambda s: s
 
-    def train(self, pairs, labels):
+    def train(self, pairs, labels, verbose=False):
         """Calculate optimal threshold."""
 
         scores = self.run_similarity(pairs)
@@ -34,6 +34,8 @@ class Similarity(ABC):
             metrics.append(accuracy_score(labels, predictions))
         optimal_ix = np.argmax(metrics)
         self.threshold = thresholds[optimal_ix]
+        if verbose:
+            print(f'Threshold = {self.threshold:.4f}, train accuracy = {metrics[optimal_ix]:.4f}')
 
     def predict(self, scores):
         """Predict binary labels."""
