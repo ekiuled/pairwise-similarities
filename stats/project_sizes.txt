@@ -1,0 +1,39 @@
+Filename: datasets/gson_dataset.csv
+Dataset size: 364
+Negative class: 182
+Positive class: 182
+
+Filename: datasets/junit4_dataset.csv
+Dataset size: 588
+Negative class: 294
+Positive class: 294
+
+Filename: datasets/mockito_dataset.csv
+Dataset size: 824
+Negative class: 412
+Positive class: 412
+
+Filename: datasets/slf4j_dataset.csv
+Dataset size: 488
+Negative class: 244
+Positive class: 244
+
+Filename: datasets/dataset.csv
+Dataset size: 2264
+Negative class: 1132
+Positive class: 1132
+
+Filename: datasets/train.csv
+Dataset size: 1776
+Negative class: 888
+Positive class: 888
+
+Filename: datasets/test.csv
+Dataset size: 488
+Negative class: 244
+Positive class: 244
+
+Filename: datasets/test_full.csv
+Dataset size: 11628
+Negative class: 1031
+Positive class: 244

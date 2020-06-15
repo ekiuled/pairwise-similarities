@@ -21,26 +21,26 @@ def calculated(func):
 
 
 def test_set(func):
-    def wrapper(train, test, similarity, *args, **kwargs):
+    def wrapper(train, test, similarity, verbose, *args, **kwargs):
         x_train, y_train = dataset_parser.dataset_from_file(train)
         x_test, y_test = dataset_parser.dataset_from_file(test)
-        similarity.train(x_train, y_train, verbose=True)
+        similarity.train(x_train, y_train, verbose)
         y_pred = similarity.run_similarity(x_test)
         return func(similarity, y_test, y_pred, *args, **kwargs)
     return wrapper
 
 
 def shuffled_test_set(func):
-    def wrapper(filename, similarity, *args, **kwargs):
+    def wrapper(filename, similarity, verbose, *args, **kwargs):
         pairs, labels = dataset_parser.dataset_from_file(filename)
         x_train, x_test, y_train, y_test = train_test_split(pairs, labels, test_size=0.2, random_state=42, stratify=labels)
-        similarity.train(x_train, y_train, verbose=True)
+        similarity.train(x_train, y_train, verbose)
         y_pred = similarity.run_similarity(x_test)
         return func(similarity, y_test, y_pred, *args, **kwargs)
     return wrapper
 
 
-@shuffled_test_set
+@test_set
 def get_metrics(similarity, labels, scores):
     """Get Accuracy, F1 and ROC AUC."""
 
