@@ -1,21 +1,46 @@
 import re
 import csv
+import itertools
 
 
-def extract(filename):
-    """Extract comments and their group tags into two lists."""
+def comment(string):
+    """Extract a comment from a single tagged string."""
 
     left_br = '<!-- .+ <=< ACCEPT -->'
     right_br = '<!-- ACCEPT >=> .+ -->'
-    pattern = re.compile(left_br + '[\w\W]+?' + right_br)
+    return re.sub(left_br, '', re.sub(right_br, '', string))
+
+
+def group(string):
+    """Extract a group tag from a single string."""
+
+    return re.sub('<!-- ', '', re.sub(' <=< ACCEPT -->[\w\W]*', '', string))
+
+
+def extract(filename, all=False):
+    """Extract all comments, group tags if available and respective object types as three lists."""
+
     f = open(filename, 'r')
-    result = pattern.findall(f.read())
+    pattern = re.compile('[\w\W]+?\n----------------------\n\n')
+    instances = pattern.findall(f.read())
 
-    comments = [re.sub(left_br, '', re.sub(right_br, '', r)) for r in result]
-    groups = [re.sub('<!-- ', '', re.sub(' <=< ACCEPT -->[\w\W]*', '', r))
-              for r in result]
+    result = [i.split('\n', 1) for i in instances]
+    result = list(filter(lambda x: x[0] != '# Package  /**', result))
 
-    return comments, groups
+    types, strings = map(list, zip(*result))
+    strings = [re.sub('----------------------', '', s).strip('\n') for s in strings]
+
+    comments = []
+    groups = []
+    for s in strings:
+        if '<=< ACCEPT -->' in s:
+            comments.append(comment(s))
+            groups.append(group(s))
+        elif all:
+            comments.append(s)
+            groups.append('')
+
+    return comments, groups, types
 
 
 def generate_pairs(comments, groups):
@@ -26,7 +51,10 @@ def generate_pairs(comments, groups):
 
     for i in range(0, n):
         for j in range(i + 1, n):
-            pairs.append([comments[i], comments[j], int(groups[i] == groups[j])])
+            if groups[i] and groups[j]:
+                pairs.append([comments[i], comments[j], int(groups[i] == groups[j])])
+            else:
+                pairs.append([comments[i], comments[j], -1])
 
     return pairs
 
@@ -81,9 +109,11 @@ def get_cache_from_file(filename):
     return list(map(float, scores)), list(map(int, labels))
 
 
-def parse(filename, postfix=''):
-    """Generate a dataset of labeled comment pairs and write it to a file."""
+def parse(filename, postfix='', all=False):
+    """Generate a dataset of unique labeled comment pairs and write it to a file."""
 
-    comments, groups = extract(filename)
+    comments, groups, _ = extract(filename, all)
     data = generate_pairs(comments, groups)
+    data.sort()
+    data = list(d for d, _ in itertools.groupby(data))
     list_to_file(data, 'data_' + postfix + '.csv')
