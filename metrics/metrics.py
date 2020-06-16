@@ -1,4 +1,4 @@
-from helpers import similarity_generator, dataset_parser
+from helpers import dataset_parser
 from similarities.similarity import Similarity
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.model_selection import train_test_split

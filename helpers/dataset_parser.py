@@ -59,6 +59,22 @@ def generate_pairs(comments, groups):
     return pairs
 
 
+def generate_pairs_with_types(comments, groups, types):
+    """Generate labeled pairs of comments and their types from a list of comments with their group tags."""
+
+    n = len(comments)
+    pairs = []
+
+    for i in range(0, n):
+        for j in range(i + 1, n):
+            if groups[i] and groups[j]:
+                pairs.append([comments[i], comments[j], int(groups[i] == groups[j]), types[i], types[j]])
+            else:
+                pairs.append([comments[i], comments[j], -1, types[i], types[j]])
+
+    return pairs
+
+
 def list_to_file(list, filename):
     """Write a list to a file in csv format."""
 
@@ -109,11 +125,21 @@ def get_cache_from_file(filename):
     return list(map(float, scores)), list(map(int, labels))
 
 
-def parse(filename, postfix='', all=False):
+def parse(file_in, file_out='_data.csv'):
     """Generate a dataset of unique labeled comment pairs and write it to a file."""
 
-    comments, groups, _ = extract(filename, all)
+    comments, groups, _ = extract(file_in)
     data = generate_pairs(comments, groups)
     data.sort()
     data = list(d for d, _ in itertools.groupby(data))
-    list_to_file(data, 'data_' + postfix + '.csv')
+    list_to_file(data, file_out)
+
+
+def parse_full(file_in, file_out='_data.csv'):
+    """Generate a dataset of unique typed comment pairs with labels when available and write it to a file."""
+
+    comments, groups, types = extract(file_in, True)
+    data = generate_pairs_with_types(comments, groups, types)
+    data.sort()
+    data = list(d for d, _ in itertools.groupby(data))
+    list_to_file(data, file_out)
