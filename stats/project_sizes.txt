@@ -37,3 +37,4 @@ Filename: datasets/test_full.csv
 Dataset size: 11628
 Negative class: 1031
 Positive class: 244
+Unlabeled: 10353
