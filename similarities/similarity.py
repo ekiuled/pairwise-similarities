@@ -1,10 +1,18 @@
 from abc import ABC, abstractmethod
-from segmentation import segment
-from normalizer import normalize
+from pipeline.segmentation import segment
+from pipeline.normalizer import normalize
 from scipy.optimize import linprog
+from sklearn.metrics import accuracy_score
+import numpy as np
 
 
 class Similarity(ABC):
+    """Similarity base class. 
+
+    Override `similarity(x, y)` method for customization.
+    Call `run_similarity` on a list of pairs to get a list of similarities.
+    """
+
     def __init__(self, segmentation=False, normalization=None):
         self.segmentation = segmentation
         if normalization == 'full':
@@ -14,24 +22,42 @@ class Similarity(ABC):
         else:
             self.normalize = lambda s: s
 
-    def run_similarity(self, data):
-        """Applies the similarity function to each element of the list."""
+    def train(self, pairs, labels, verbose=False):
+        """Calculate optimal threshold."""
+
+        scores = self.run_similarity(pairs)
+        thresholds = sorted(set(scores))
+        thresholds.append(thresholds[-1] + 1)
+        metrics = []
+        for threshold in thresholds:
+            predictions = np.greater_equal(scores, threshold).astype(int)
+            metrics.append(accuracy_score(labels, predictions))
+        optimal_ix = np.argmax(metrics)
+        self.threshold = thresholds[optimal_ix]
+        if verbose:
+            print(f'Threshold = {self.threshold:.4f}, train accuracy = {metrics[optimal_ix]:.4f}')
+
+    def predict(self, scores):
+        """Predict binary labels."""
+
+        return np.greater_equal(scores, self.threshold).astype(int)
+
+    def run_similarity(self, pairs):
+        """Apply the similarity function to each element of the list."""
 
         similarities = []
 
         if self.segmentation:
-            for item in data:
-                similarities.append(
-                    self.vectorized_similarity(item[0], item[1]))
+            for pair in pairs:
+                similarities.append(self.vectorized_similarity(pair[0], pair[1]))
         else:
-            for item in data:
-                similarities.append(self.similarity(
-                    self.normalize(item[0]), self.normalize(item[1])))
+            for pair in pairs:
+                similarities.append(self.similarity(self.normalize(pair[0]), self.normalize(pair[1])))
 
         return similarities
 
     def vectorized_similarity(self, x, y):
-        """Parses two strings as vectors of JavaDoc tags and calculates their similarity."""
+        """Parse two strings as vectors of JavaDoc tags and calculate their similarity."""
 
         x = segment(x)
         y = segment(y)
@@ -54,7 +80,7 @@ class Similarity(ABC):
         return result / length if length else 0
 
     def composite_similarity(self, x, y):
-        """Matches optimally elements of two lists and calculates their similarity."""
+        """Match optimally elements of two lists and calculate their similarity."""
 
         s = [-self.similarity(p, q) for p in x for q in y]
         n = len(x)
@@ -69,6 +95,6 @@ class Similarity(ABC):
 
     @abstractmethod
     def similarity(self, x, y):
-        """Calculates raw similarity of two strings."""
+        """Calculate raw similarity of two strings."""
 
         pass
