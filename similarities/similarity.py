@@ -4,6 +4,7 @@ from pipeline.normalizer import normalize
 from scipy.optimize import linprog
 from sklearn.metrics import accuracy_score
 import numpy as np
+import pickle
 
 
 class Similarity(ABC):
@@ -22,7 +23,17 @@ class Similarity(ABC):
         else:
             self.normalize = lambda s: s
 
-    def train(self, pairs, labels, verbose=False):
+    def load(self, cache):
+        """Load trained model."""
+
+        with open('cache/thresholds.pkl', 'rb') as cache_file:
+            try:
+                d = pickle.load(cache_file)
+                self.threshold = d[cache]
+            except:
+                raise ValueError('empty threshold cache.')
+
+    def train(self, pairs, labels, verbose=False, cache=None):
         """Calculate optimal threshold."""
 
         scores = self.run_similarity(pairs)
@@ -36,6 +47,15 @@ class Similarity(ABC):
         self.threshold = thresholds[optimal_ix]
         if verbose:
             print(f'Threshold = {self.threshold:.4f}, train accuracy = {metrics[optimal_ix]:.4f}')
+        if cache:
+            with open('cache/thresholds.pkl', 'rb') as cache_file:
+                try:
+                    d = pickle.load(cache_file)
+                except:
+                    d = {}
+            with open('cache/thresholds.pkl', 'wb') as cache_file:
+                d[cache] = self.threshold
+                pickle.dump(d, cache_file)
 
     def predict(self, scores):
         """Predict binary labels."""

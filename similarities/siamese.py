@@ -1,13 +1,14 @@
 from similarities.similarity import Similarity
 from gensim.models import Word2Vec
-from keras.preprocessing.text import Tokenizer, text_to_word_sequence
+from keras.preprocessing.text import Tokenizer, text_to_word_sequence, tokenizer_from_json
 from keras.preprocessing.sequence import pad_sequences
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Input, LSTM, Dropout, Bidirectional
 from keras.layers.normalization import BatchNormalization
 from keras.layers.embeddings import Embedding
 from keras.layers.merge import concatenate
-from keras.models import Model
+from keras.models import Model, load_model
+import json
 import numpy as np
 
 
@@ -26,6 +27,8 @@ class SiameseSimilarity(Similarity):
         self.rate_drop_dense = 0.25
         self.activation_function = 'relu'
         self.epochs = 20
+        self.model_cache = 'cache/models/siam'
+        self.tokenizer_cache = 'cache/models/tokenizer'
 
     def similarity(self, x, y):
         return self.run_similarity([x, y])
@@ -36,7 +39,15 @@ class SiameseSimilarity(Similarity):
         comments1, comments2, word_counts = self.features(pairs)
         return list(self.model.predict([comments1, comments2, word_counts]).ravel())
 
-    def train(self, pairs, labels, verbose=False):
+    def load(self, cache):
+        """Load trained model."""
+
+        self.model = load_model(self.model_cache)
+        with open(self.tokenizer_cache) as f:
+            self.tokenizer = tokenizer_from_json(json.load(f))
+        super().load(cache)
+
+    def train(self, pairs, labels, verbose=False, cache=None):
         """Define and train the neural network."""
 
         # Flatten list of comment pairs
@@ -47,6 +58,9 @@ class SiameseSimilarity(Similarity):
         # Train tokenizer
         self.tokenizer = Tokenizer()
         self.tokenizer.fit_on_texts(comments)
+        if cache:
+            with open(self.tokenizer_cache, 'w') as f:
+                json.dump(self.tokenizer.to_json(), f)
         word_index = self.tokenizer.word_index
         vocab_size = len(word_index) + 1
         # Generate embedding matrix
@@ -91,7 +105,12 @@ class SiameseSimilarity(Similarity):
         comments1, comments2, word_counts = self.features(pairs)
         # Train the model
         self.model.fit([comments1, comments2, word_counts], labels, epochs=self.epochs, validation_split=0.1, callbacks=[es], verbose=0)
-        super().train(pairs, labels, verbose)
+
+        # Save model
+        if cache:
+            self.model.save(self.model_cache)
+
+        super().train(pairs, labels, verbose, cache)
 
     def features(self, pairs):
         """Get features from comment pairs: tokenized sequences and word counts."""

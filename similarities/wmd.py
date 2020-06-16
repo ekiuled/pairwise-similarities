@@ -12,13 +12,20 @@ class WMDSimilarity(Similarity):
 
         super().__init__()
         self.embedding_dimension = 50
+        self.model_cache = 'cache/models/wmd'
 
     def similarity(self, x, y):
         x = text_to_word_sequence(x)
         y = text_to_word_sequence(y)
         return -self.word2vec.wv.wmdistance(x, y)
 
-    def train(self, pairs, labels, verbose=False):
+    def load(self, cache):
+        """Load trained model."""
+
+        self.word2vec = Word2Vec.load(self.model_cache)
+        super().load(cache)
+
+    def train(self, pairs, labels, verbose=False, cache=None):
         """Train word2vec embeddings."""
 
         # Flatten list of comment pairs
@@ -26,4 +33,7 @@ class WMDSimilarity(Similarity):
         comments = list(map(text_to_word_sequence, comments))
         # Train word2vec embeddings
         self.word2vec = Word2Vec(comments, min_count=1, size=self.embedding_dimension)
-        super().train(pairs, labels, verbose)
+        # Save
+        if cache:
+            self.word2vec.save(self.model_cache)
+        super().train(pairs, labels, verbose, cache)

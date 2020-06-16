@@ -74,6 +74,15 @@ class bind with the appropriate ILoggerFactory instance.
 class bind with the appropriate IMarkerFactory instance.
 
 @author Ceki G&uuml;lc&uuml;",-1,# Interface  LoggerFactoryBinder    (LoggerFactoryBinder.java),# Interface  MarkerFactoryBinder    (MarkerFactoryBinder.java),1
+"An internal interface which helps the static org.slf4j.LoggerFactory
+class bind with the appropriate ILoggerFactory instance.
+
+@author Ceki G&uuml;lc&uuml;","Return the IMarkerFactoryinstance in use.
+
+The IMarkerFactory instance is usually bound with this class at
+compile time.
+
+@return the IMarkerFactory instance in use",-1,# Interface  LoggerFactoryBinder    (LoggerFactoryBinder.java),# Method  public static IMarkerFactory getIMarkerFactory()    (MarkerFactory.java),1
 "An internal interface which helps the static org.slf4j.MarkerFactory
 class bind with the appropriate IMarkerFactory instance.
 
@@ -84,6 +93,15 @@ Simple logging systems can conform to the SLF4J API by binding
 org.slf4j.MarkerFactory with an instance of this class.
 
 @author Ceki G&uuml;lc&uuml;",-1,# Interface  MarkerFactoryBinder    (MarkerFactoryBinder.java),# Class  BasicMarkerFactory    (BasicMarkerFactory.java),1
+"An internal interface which helps the static org.slf4j.MarkerFactory
+class bind with the appropriate IMarkerFactory instance.
+
+@author Ceki G&uuml;lc&uuml;","Return the IMarkerFactoryinstance in use.
+
+The IMarkerFactory instance is usually bound with this class at
+compile time.
+
+@return the IMarkerFactory instance in use",-1,# Interface  MarkerFactoryBinder    (MarkerFactoryBinder.java),# Method  public static IMarkerFactory getIMarkerFactory()    (MarkerFactory.java),1
 "An optional interface helping integration with logging systems capable of
 extracting location information. This interface is mainly used by SLF4J bridges
 such as jcl-over-slf4j, jul-to-slf4j and log4j-over-slf4j or Logger wrappers
@@ -116,64 +134,6 @@ LogbackMDCAdapter has evolved and is now considerably more sophisticated.
 @author Lukasz Cwik
 
 @since 1.5.0",-1,# Interface  LocationAwareLogger    (LocationAwareLogger.java),# Class  BasicMDCAdapter    (BasicMDCAdapter.java),1
-"An optional interface helping integration with logging systems capable of
-extracting location information. This interface is mainly used by SLF4J bridges
-such as jcl-over-slf4j, jul-to-slf4j and log4j-over-slf4j or Logger wrappers
-which need to provide hints so that the underlying logging system can extract
-the correct location information (method name, line number).
-
-@author Ceki Gulcu
-@since 1.3","Formats messages according to very simple substitution rules. Substitutions
-can be made 1, 2 or more arguments.
-
-For example,
-
-MessageFormatter.format(&quot;Hi {}.&quot;, &quot;there&quot;)
-
-will return the string ""Hi there."".
-
-The {} pair is called the formatting anchor. It serves to designate
-the location where arguments need to be substituted within the message
-pattern.
-
-In case your message contains the '{' or the '}' character, you do not have
-to do anything special unless the '}' character immediately follows '{'. For
-example,
-
-MessageFormatter.format(&quot;Set {1,2,3} is not equal to {}.&quot;, &quot;1,2&quot;);
-
-will return the string ""Set {1,2,3} is not equal to 1,2."".
-
-If for whatever reason you need to place the string ""{}"" in the message
-without its formatting anchor meaning, then you need to escape the
-'{' character with '\', that is the backslash character. Only the '{'
-character should be escaped. There is no need to escape the '}' character.
-For example,
-
-MessageFormatter.format(&quot;Set \\{} is not equal to {}.&quot;, &quot;1,2&quot;);
-
-will return the string ""Set {} is not equal to 1,2."".
-
-The escaping behavior just described can be overridden by escaping the escape
-character '\'. Calling
-
-MessageFormatter.format(&quot;File name is C:\\\\{}.&quot;, &quot;file.zip&quot;);
-
-will return the string ""File name is C:\file.zip"".
-
-The formatting conventions are different than those of MessageFormat
-which ships with the Java platform. This is justified by the fact that
-SLF4J's implementation is 10 times faster than that of MessageFormat.
-This local performance difference is both measurable and significant in the
-larger context of the complete logging processing chain.
-
-See also #format(String, Object),
-#format(String, Object, Object) and
-#arrayFormat(String, Object[]) methods for more details.
-
-@author Ceki G&uuml;lc&uuml;
-@author Joern Huxhorn
-",-1,# Interface  LocationAwareLogger    (LocationAwareLogger.java),# Class  MessageFormatter    (MessageFormatter.java),1
 "An optional interface helping integration with logging systems capable of
 extracting location information. This interface is mainly used by SLF4J bridges
 such as jcl-over-slf4j, jul-to-slf4j and log4j-over-slf4j or Logger wrappers
@@ -248,6 +208,20 @@ consideration.
 @param format   the format string
 @param argArray an array of arguments
 @since 1.4",-1,# Interface  LocationAwareLogger    (LocationAwareLogger.java),"# Method  public void trace(Marker marker, String format, Object... argArray)    (Logger.java)",1
+"An optional interface helping integration with logging systems capable of
+extracting location information. This interface is mainly used by SLF4J bridges
+such as jcl-over-slf4j, jul-to-slf4j and log4j-over-slf4j or Logger wrappers
+which need to provide hints so that the underlying logging system can extract
+the correct location information (method name, line number).
+
+@author Ceki Gulcu
+@since 1.3","This method is similar to #trace(String, Throwable) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param msg    the message accompanying the exception
+@param t      the exception (throwable) to log
+@since 1.4",-1,# Interface  LocationAwareLogger    (LocationAwareLogger.java),"# Method  public void trace(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "As of SLF4J version 1.7.14, StaticMarkerBinder classes shipping in various bindings
 come with a getSingleton() method. Previously only a public field called SINGLETON
 was available.
@@ -351,15 +325,6 @@ data is also taken into consideration.
 @param marker The marker data to take into consideration
 @return True if this Logger is enabled for the WARN level,
 false otherwise.",-1,# Method  boolean exists(String name)    (IMarkerFactory.java),# Method  public boolean isWarnEnabled(Marker marker)    (Logger.java),1
-"Create a marker which is detached (even at birth) from the MarkerFactory.
-
-@param name the name of the marker
-@return a dangling marker
-@since 1.5.1","Return a logger named according to the name parameter using the statically
-bound ILoggerFactory instance.
-
-@param name The name of the logger.
-@return logger",-1,# Method  public static Marker getDetachedMarker(String name)    (MarkerFactory.java),# Method  public static Logger getLogger(String name)    (LoggerFactory.java),1
 "Create a marker which is detached (even at birth) from this IMarkerFactory.
 
 @param name marker name
@@ -390,10 +355,6 @@ NOPLogger.
 "Currently, this method returns the class name of
 BasicMarkerFactory.","Currently this method always returns an instance of
 StaticMDCBinder.",-1,# Method  public String getMarkerFactoryClassStr()    (StaticMarkerBinder.java),# Method  public MDCAdapter getMDCA()    (StaticMDCBinder.java),1
-"Currently, this method returns the class name of
-BasicMarkerFactory.","Get the name of this Marker.
-
-@return name of marker",-1,# Method  public String getMarkerFactoryClassStr()    (StaticMarkerBinder.java),# Method  public String getName()    (Marker.java),1
 "Currently, this method returns the class name of
 BasicMarkerFactory.","Return the name of this Logger instance.
 @return name of this logger instance",-1,# Method  public String getMarkerFactoryClassStr()    (StaticMarkerBinder.java),# Method  public String getName()    (Logger.java),1
@@ -591,7 +552,7 @@ even if this logger is disabled for DEBUG. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,# Class  MessageFormatter    (MessageFormatter.java),"# Method  public void debug(String format, Object... arguments)    (Logger.java)",1
+@param arguments a list of 3 or more arguments",0,# Class  MessageFormatter    (MessageFormatter.java),"# Method  public void debug(String format, Object... arguments)    (Logger.java)",0
 "Formats messages according to very simple substitution rules. Substitutions
 can be made 1, 2 or more arguments.
 
@@ -949,7 +910,7 @@ even if this logger is disabled for INFO. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,# Class  MessageFormatter    (MessageFormatter.java),"# Method  public void info(String format, Object... arguments)    (Logger.java)",1
+@param arguments a list of 3 or more arguments",0,# Class  MessageFormatter    (MessageFormatter.java),"# Method  public void info(String format, Object... arguments)    (Logger.java)",0
 "Formats messages according to very simple substitution rules. Substitutions
 can be made 1, 2 or more arguments.
 
@@ -1249,7 +1210,7 @@ even if this logger is disabled for WARN. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,# Class  MessageFormatter    (MessageFormatter.java),"# Method  public void warn(String format, Object... arguments)    (Logger.java)",1
+@param arguments a list of 3 or more arguments",0,# Class  MessageFormatter    (MessageFormatter.java),"# Method  public void warn(String format, Object... arguments)    (Logger.java)",0
 "Formats messages according to very simple substitution rules. Substitutions
 can be made 1, 2 or more arguments.
 
@@ -3386,6 +3347,34 @@ even in case of a logger name mismatch.
 @return logger
 
 @see <a href=""http://www.slf4j.org/codes.html#loggerNameMismatch"">Detected logger name mismatch",-1,# Method  public static String get(String key) throws IllegalArgumentException    (MDC.java),# Method  public static Logger getLogger(Class<?> clazz)    (LoggerFactory.java),1
+"Get the diagnostic context identified by the key parameter. The
+key parameter cannot be null.
+
+This method delegates all work to the MDC of the underlying logging system.
+
+@param key
+@return the string value identified by the key parameter.
+@throws IllegalArgumentException
+in case the ""key"" parameter is null","This method is similar to #info(String, Throwable) method
+except that the marker data is also taken into consideration.
+
+@param marker the marker data for this log statement
+@param msg    the message accompanying the exception
+@param t      the exception (throwable) to log",-1,# Method  public static String get(String key) throws IllegalArgumentException    (MDC.java),"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",1
+"Get the diagnostic context identified by the key parameter. The
+key parameter cannot be null.
+
+This method delegates all work to the MDC of the underlying logging system.
+
+@param key
+@return the string value identified by the key parameter.
+@throws IllegalArgumentException
+in case the ""key"" parameter is null","This method is similar to #warn(String, Throwable) method
+except that the marker data is also taken into consideration.
+
+@param marker the marker data for this log statement
+@param msg    the message accompanying the exception
+@param t      the exception (throwable) to log",-1,# Method  public static String get(String key) throws IllegalArgumentException    (MDC.java),"# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Holds the results of formatting done by MessageFormatter.
 
 @author Joern Huxhorn",Remove the the context identified by the key parameter.,-1,# Class  FormattingTuple    (FormattingTuple.java),# Method  public void remove(String key)    (BasicMDCAdapter.java),1
@@ -3510,6 +3499,20 @@ LoggerFactory#getLogger(String) method. An instance of of this
 interface is bound internally with LoggerFactory class at
 compile time.
 
+@author Ceki G&uuml;lc&uuml;","Similar to #isErrorEnabled() method except that the
+marker data is also taken into consideration.
+
+@param marker The marker data to take into consideration
+@return True if this Logger is enabled for the ERROR level,
+false otherwise.",-1,# Interface  ILoggerFactory    (ILoggerFactory.java),# Method  public boolean isErrorEnabled(Marker marker)    (Logger.java),1
+"ILoggerFactory instances manufacture Logger
+instances by name.
+
+Most users retrieve Logger instances through the static
+LoggerFactory#getLogger(String) method. An instance of of this
+interface is bound internally with LoggerFactory class at
+compile time.
+
 @author Ceki G&uuml;lc&uuml;","The String form of the ILoggerFactory object that this
 LoggerFactoryBinder instance is intended to return.
 
@@ -3550,16 +3553,6 @@ Real implementations are found in  each SLF4J binding project, e.g. slf4j-nop,
 slf4j-simple, slf4j-log4j12 etc.
 
 @author Ceki G&uuml;lc&uuml;",-1,# Interface  ILoggerFactory    (ILoggerFactory.java),# Class  StaticMarkerBinder    (StaticMarkerBinder.java),1
-"ILoggerFactory instances manufacture Logger
-instances by name.
-
-Most users retrieve Logger instances through the static
-LoggerFactory#getLogger(String) method. An instance of of this
-interface is bound internally with LoggerFactory class at
-compile time.
-
-@author Ceki G&uuml;lc&uuml;","There is no point in creating multiple instances of NOPLOgger,
-except by derived classes, hence the protected  access for the constructor.",-1,# Interface  ILoggerFactory    (ILoggerFactory.java),# Method  protected NOPLogger()    (NOPLogger.java),1
 "Implementations of this interface are used to manufacture Marker
 instances.
 
@@ -3581,26 +3574,6 @@ See the section <a href=""http://slf4j.org/faq.html#3"">Implementing
 the SLF4J API in the FAQ for details on how to make your logging
 system conform to SLF4J.
 
-@author Ceki G&uuml;lc&uuml;","Return a logger named corresponding to the class passed as parameter, using
-the statically bound ILoggerFactory instance.
-
-In case the the clazz parameter differs from the name of
-the caller as computed internally by SLF4J, a logger name mismatch warning will be
-printed but only if the slf4j.detectLoggerNameMismatch system property is
-set to true. By default, this property is not set and no warnings will be printed
-even in case of a logger name mismatch.
-
-@param clazz the returned logger will be named after clazz
-@return logger
-
-@see <a href=""http://www.slf4j.org/codes.html#loggerNameMismatch"">Detected logger name mismatch",-1,# Interface  IMarkerFactory    (IMarkerFactory.java),# Method  public static Logger getLogger(Class<?> clazz)    (LoggerFactory.java),1
-"Implementations of this interface are used to manufacture Marker
-instances.
-
-See the section <a href=""http://slf4j.org/faq.html#3"">Implementing
-the SLF4J API in the FAQ for details on how to make your logging
-system conform to SLF4J.
-
 @author Ceki G&uuml;lc&uuml;","There is no point in creating multiple instances of NOPLOgger,
 except by derived classes, hence the protected  access for the constructor.",-1,# Interface  IMarkerFactory    (IMarkerFactory.java),# Method  protected NOPLogger()    (NOPLogger.java),1
 "In order to call SecurityManager#getClassContext(), which is a
@@ -3614,12 +3587,60 @@ removed at any time without notice.
 You are strongly discouraged from calling this method in production code.",-1,# Class  ClassContextSecurityManager    (Util.java),# Method  static void reset()    (LoggerFactory.java),1
 "In order to call SecurityManager#getClassContext(), which is a
 protected method, we add this wrapper which allows the method to be visible
+inside this package.","Similar to #isDebugEnabled() method except that the
+marker data is also taken into account.
+
+@param marker The marker data to take into consideration
+@return True if this Logger is enabled for the DEBUG level,
+false otherwise.",-1,# Class  ClassContextSecurityManager    (Util.java),# Method  public boolean isDebugEnabled(Marker marker)    (Logger.java),1
+"In order to call SecurityManager#getClassContext(), which is a
+protected method, we add this wrapper which allows the method to be visible
+inside this package.","Similar to #isErrorEnabled() method except that the
+marker data is also taken into consideration.
+
+@param marker The marker data to take into consideration
+@return True if this Logger is enabled for the ERROR level,
+false otherwise.",-1,# Class  ClassContextSecurityManager    (Util.java),# Method  public boolean isErrorEnabled(Marker marker)    (Logger.java),1
+"In order to call SecurityManager#getClassContext(), which is a
+protected method, we add this wrapper which allows the method to be visible
+inside this package.","Similar to #isWarnEnabled() method except that the marker
+data is also taken into consideration.
+
+@param marker The marker data to take into consideration
+@return True if this Logger is enabled for the WARN level,
+false otherwise.",-1,# Class  ClassContextSecurityManager    (Util.java),# Method  public boolean isWarnEnabled(Marker marker)    (Logger.java),1
+"In order to call SecurityManager#getClassContext(), which is a
+protected method, we add this wrapper which allows the method to be visible
+inside this package.","This method is similar to #debug(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Class  ClassContextSecurityManager    (Util.java),"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)",1
+"In order to call SecurityManager#getClassContext(), which is a
+protected method, we add this wrapper which allows the method to be visible
 inside this package.","This method is similar to #error(String, Object) method except that the
 marker data is also taken into consideration.
 
 @param marker the marker data specific to this log statement
 @param format the format string
 @param arg    the argument",-1,# Class  ClassContextSecurityManager    (Util.java),"# Method  public void error(Marker marker, String format, Object arg)    (Logger.java)",1
+"In order to call SecurityManager#getClassContext(), which is a
+protected method, we add this wrapper which allows the method to be visible
+inside this package.","This method is similar to #info(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Class  ClassContextSecurityManager    (Util.java),"# Method  public void info(Marker marker, String format, Object arg)    (Logger.java)",1
+"In order to call SecurityManager#getClassContext(), which is a
+protected method, we add this wrapper which allows the method to be visible
+inside this package.","This method is similar to #warn(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Class  ClassContextSecurityManager    (Util.java),"# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
 "Is the logger instance enabled for the DEBUG level?
 
 @return True if this Logger is enabled for the DEBUG level,
@@ -3795,12 +3816,58 @@ except by derived classes, hence the protected  access for the constructor.",-1,
 "Is the logger instance enabled for the DEBUG level?
 
 @return True if this Logger is enabled for the DEBUG level,
+false otherwise.","This method is similar to #debug(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isDebugEnabled()    (Logger.java),"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the DEBUG level?
+
+@return True if this Logger is enabled for the DEBUG level,
+false otherwise.","This method is similar to #error(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isDebugEnabled()    (Logger.java),"# Method  public void error(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the DEBUG level?
+
+@return True if this Logger is enabled for the DEBUG level,
+false otherwise.","This method is similar to #error(String, Throwable)
+method except that the marker data is also taken into
+consideration.
+
+@param marker the marker data specific to this log statement
+@param msg    the message accompanying the exception
+@param t      the exception (throwable) to log",-1,# Method  public boolean isDebugEnabled()    (Logger.java),"# Method  public void error(Marker marker, String msg, Throwable t)    (Logger.java)",1
+"Is the logger instance enabled for the DEBUG level?
+
+@return True if this Logger is enabled for the DEBUG level,
+false otherwise.","This method is similar to #info(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isDebugEnabled()    (Logger.java),"# Method  public void info(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the DEBUG level?
+
+@return True if this Logger is enabled for the DEBUG level,
 false otherwise.","This method is similar to #info(String, Throwable) method
 except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
 @param t      the exception (throwable) to log",-1,# Method  public boolean isDebugEnabled()    (Logger.java),"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",1
+"Is the logger instance enabled for the DEBUG level?
+
+@return True if this Logger is enabled for the DEBUG level,
+false otherwise.","This method is similar to #warn(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isDebugEnabled()    (Logger.java),"# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
 "Is the logger instance enabled for the DEBUG level?
 
 @return True if this Logger is enabled for the DEBUG level,
@@ -4040,6 +4107,34 @@ except by derived classes, hence the protected  access for the constructor.",-1,
 "Is the logger instance enabled for the INFO level?
 
 @return True if this Logger is enabled for the INFO level,
+false otherwise.","This method is similar to #error(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isInfoEnabled()    (Logger.java),"# Method  public void error(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the INFO level?
+
+@return True if this Logger is enabled for the INFO level,
+false otherwise.","This method is similar to #error(String, Throwable)
+method except that the marker data is also taken into
+consideration.
+
+@param marker the marker data specific to this log statement
+@param msg    the message accompanying the exception
+@param t      the exception (throwable) to log",-1,# Method  public boolean isInfoEnabled()    (Logger.java),"# Method  public void error(Marker marker, String msg, Throwable t)    (Logger.java)",1
+"Is the logger instance enabled for the INFO level?
+
+@return True if this Logger is enabled for the INFO level,
+false otherwise.","This method is similar to #info(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isInfoEnabled()    (Logger.java),"# Method  public void info(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the INFO level?
+
+@return True if this Logger is enabled for the INFO level,
 false otherwise.","This method is similar to #info(String, Throwable) method
 except that the marker data is also taken into consideration.
 
@@ -4049,12 +4144,43 @@ except that the marker data is also taken into consideration.
 "Is the logger instance enabled for the INFO level?
 
 @return True if this Logger is enabled for the INFO level,
+false otherwise.","This method is similar to #warn(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isInfoEnabled()    (Logger.java),"# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the INFO level?
+
+@return True if this Logger is enabled for the INFO level,
 false otherwise.","This method is similar to #warn(String, Throwable) method
 except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
 @param t      the exception (throwable) to log",-1,# Method  public boolean isInfoEnabled()    (Logger.java),"# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",1
+"Is the logger instance enabled for the TRACE level?
+
+@return True if this Logger is enabled for the TRACE level,
+false otherwise.
+@since 1.4","As of SLF4J version 1.7.14, StaticMDCBinder classes shipping in various bindings
+come with a getSingleton() method. Previously only a public field called SINGLETON
+was available.
+
+@return MDCAdapter
+@throws NoClassDefFoundError in case no binding is available
+@since 1.7.14",-1,# Method  public boolean isTraceEnabled()    (Logger.java),# Method  private static MDCAdapter bwCompatibleGetMDCAdapterFromBinder() throws NoClassDefFoundError    (MDC.java),1
+"Is the logger instance enabled for the TRACE level?
+
+@return True if this Logger is enabled for the TRACE level,
+false otherwise.
+@since 1.4","As of SLF4J version 1.7.14, StaticMarkerBinder classes shipping in various bindings
+come with a getSingleton() method. Previously only a public field called SINGLETON
+was available.
+
+@return IMarkerFactory
+@throws NoClassDefFoundError in case no binding is available
+@since 1.7.14",-1,# Method  public boolean isTraceEnabled()    (Logger.java),# Method  private static IMarkerFactory bwCompatibleGetMarkerFactoryFromBinder() throws NoClassDefFoundError    (MarkerFactory.java),1
 "Is the logger instance enabled for the TRACE level?
 
 @return True if this Logger is enabled for the TRACE level,
@@ -4100,6 +4226,29 @@ is disabled for the TRACE level.
 @param format the format string
 @param arg    the argument
 @since 1.4",-1,# Method  public boolean isTraceEnabled()    (Logger.java),"# Method  public void trace(String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the TRACE level?
+
+@return True if this Logger is enabled for the TRACE level,
+false otherwise.
+@since 1.4","Log a message at the TRACE level according to the specified format
+and arguments.
+
+This form avoids superfluous object creation when the logger
+is disabled for the TRACE level.
+
+@param format the format string
+@param arg1   the first argument
+@param arg2   the second argument
+@since 1.4",-1,# Method  public boolean isTraceEnabled()    (Logger.java),"# Method  public void trace(String format, Object arg1, Object arg2)    (Logger.java)",1
+"Is the logger instance enabled for the TRACE level?
+
+@return True if this Logger is enabled for the TRACE level,
+false otherwise.
+@since 1.4","Log a message with the specific Marker at the TRACE level.
+
+@param marker the marker data specific to this log statement
+@param msg    the message string to be logged
+@since 1.4",-1,# Method  public boolean isTraceEnabled()    (Logger.java),"# Method  public void trace(Marker marker, String msg)    (Logger.java)",1
 "Is the logger instance enabled for the TRACE level?
 
 @return True if this Logger is enabled for the TRACE level,
@@ -4179,6 +4328,18 @@ marker data is also taken into consideration.
 @param format the format string
 @param arg    the argument
 @since 1.4",-1,# Method  public boolean isTraceEnabled()    (Logger.java),"# Method  public void trace(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the TRACE level?
+
+@return True if this Logger is enabled for the TRACE level,
+false otherwise.
+@since 1.4","This method is similar to #trace(String, Object...)
+method except that the marker data is also taken into
+consideration.
+
+@param marker   the marker data specific to this log statement
+@param format   the format string
+@param argArray an array of arguments
+@since 1.4",-1,# Method  public boolean isTraceEnabled()    (Logger.java),"# Method  public void trace(Marker marker, String format, Object... argArray)    (Logger.java)",1
 "Is the logger instance enabled for the TRACE level?
 
 @return True if this Logger is enabled for the TRACE level,
@@ -4289,6 +4450,34 @@ false otherwise.",-1,# Method  public boolean isWarnEnabled()    (Logger.java),#
 @return True if this Logger is enabled for the WARN level,
 false otherwise.","There is no point in creating multiple instances of NOPLOgger,
 except by derived classes, hence the protected  access for the constructor.",-1,# Method  public boolean isWarnEnabled()    (Logger.java),# Method  protected NOPLogger()    (NOPLogger.java),1
+"Is the logger instance enabled for the WARN level?
+
+@return True if this Logger is enabled for the WARN level,
+false otherwise.","This method is similar to #error(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isWarnEnabled()    (Logger.java),"# Method  public void error(Marker marker, String format, Object arg)    (Logger.java)",1
+"Is the logger instance enabled for the WARN level?
+
+@return True if this Logger is enabled for the WARN level,
+false otherwise.","This method is similar to #error(String, Throwable)
+method except that the marker data is also taken into
+consideration.
+
+@param marker the marker data specific to this log statement
+@param msg    the message accompanying the exception
+@param t      the exception (throwable) to log",-1,# Method  public boolean isWarnEnabled()    (Logger.java),"# Method  public void error(Marker marker, String msg, Throwable t)    (Logger.java)",1
+"Is the logger instance enabled for the WARN level?
+
+@return True if this Logger is enabled for the WARN level,
+false otherwise.","This method is similar to #warn(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument",-1,# Method  public boolean isWarnEnabled()    (Logger.java),"# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
 "Is the logger instance enabled for the WARN level?
 
 @return True if this Logger is enabled for the WARN level,
@@ -4416,16 +4605,6 @@ arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
 @param arguments a list of 3 or more arguments",-1,"# Method  public void debug(String format, Object arg)    (Logger.java)","# Method  public void error(String format, Object... arguments)    (Logger.java)",1
-"Log a message at the DEBUG level according to the specified format
-and argument.
-
-This form avoids superfluous object creation when the logger
-is disabled for the DEBUG level.
-
-@param format the format string
-@param arg    the argument","Log a message at the ERROR level.
-
-@param msg the message string to be logged",-1,"# Method  public void debug(String format, Object arg)    (Logger.java)",# Method  public void error(String msg)    (Logger.java),1
 "Log a message at the DEBUG level according to the specified format
 and argument.
 
@@ -4938,30 +5117,6 @@ is disabled for the DEBUG level.
 
 @param marker The marker specific to this log statement
 @param msg    the message string to be logged",0,"# Method  public void debug(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
-"Log a message at the DEBUG level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the DEBUG level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void debug(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void info(Marker marker, String msg)    (Logger.java)",1
-"Log a message at the DEBUG level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the DEBUG level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void debug(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void warn(Marker marker, String msg)    (Logger.java)",1
 "Log a message at the DEBUG level according to the specified format
 and arguments.
 
@@ -5651,7 +5806,7 @@ try(MDC.MDCCloseable closeable = MDC.putCloseable(key, value)) {
 is called.
 
 @throws IllegalArgumentException
-in case the ""key"" parameter is null",0,"# Method  public void debug(String format, Object... arguments)    (Logger.java)","# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)",0
+in case the ""key"" parameter is null",0,"# Method  public void debug(String format, Object... arguments)    (Logger.java)","# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)",1
 "Log a message at the DEBUG level according to the specified format
 and arguments.
 
@@ -5932,7 +6087,7 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log",0,"# Method  public void debug(String format, Object... arguments)    (Logger.java)","# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",0
+@param t      the exception (throwable) to log",0,"# Method  public void debug(String format, Object... arguments)    (Logger.java)","# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Log a message at the DEBUG level according to the specified format
 and arguments.
 
@@ -6003,7 +6158,7 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log",0,"# Method  public void debug(String format, Object... arguments)    (Logger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",0
+@param t      the exception (throwable) to log",0,"# Method  public void debug(String format, Object... arguments)    (Logger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Log a message at the DEBUG level.
 
 @param msg the message string to be logged","Log a message at the ERROR level.
@@ -6448,7 +6603,7 @@ consideration.
 
 @param marker the marker data specific to this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log",0,"# Method  public void error(String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg, Throwable t)    (Logger.java)",0
+@param t      the exception (throwable) to log",0,"# Method  public void error(String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Log a message at the ERROR level.
 
 @param msg the message string to be logged","Log a message at the ERROR level according to the specified format
@@ -6548,16 +6703,6 @@ arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
 @param arguments a list of 3 or more arguments",0,"# Method  public void info(String format, Object arg)    (Logger.java)","# Method  public void error(String format, Object... arguments)    (Logger.java)",1
-"Log a message at the INFO level according to the specified format
-and argument.
-
-This form avoids superfluous object creation when the logger
-is disabled for the INFO level.
-
-@param format the format string
-@param arg    the argument","Log a message at the ERROR level.
-
-@param msg the message string to be logged",-1,"# Method  public void info(String format, Object arg)    (Logger.java)",# Method  public void error(String msg)    (Logger.java),1
 "Log a message at the INFO level according to the specified format
 and argument.
 
@@ -7050,30 +7195,6 @@ is disabled for the INFO level.
 
 @param marker The marker specific to this log statement
 @param msg    the message string to be logged",0,"# Method  public void info(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
-"Log a message at the INFO level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the INFO level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void info(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void info(Marker marker, String msg)    (Logger.java)",1
-"Log a message at the INFO level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the INFO level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void info(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void warn(Marker marker, String msg)    (Logger.java)",1
 "Log a message at the INFO level according to the specified format
 and arguments.
 
@@ -7698,7 +7819,7 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log",0,"# Method  public void info(String format, Object... arguments)    (Logger.java)","# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",0
+@param t      the exception (throwable) to log",0,"# Method  public void info(String format, Object... arguments)    (Logger.java)","# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Log a message at the INFO level according to the specified format
 and arguments.
 
@@ -7769,7 +7890,7 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log",0,"# Method  public void info(String format, Object... arguments)    (Logger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",0
+@param t      the exception (throwable) to log",0,"# Method  public void info(String format, Object... arguments)    (Logger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Log a message at the INFO level.
 
 @param msg the message string to be logged","Log a message at the ERROR level.
@@ -10020,16 +10141,6 @@ This form avoids superfluous object creation when the logger
 is disabled for the WARN level.
 
 @param format the format string
-@param arg    the argument","Log a message at the ERROR level.
-
-@param msg the message string to be logged",-1,"# Method  public void warn(String format, Object arg)    (Logger.java)",# Method  public void error(String msg)    (Logger.java),1
-"Log a message at the WARN level according to the specified format
-and argument.
-
-This form avoids superfluous object creation when the logger
-is disabled for the WARN level.
-
-@param format the format string
 @param arg    the argument","Log a message at the WARN level according to the specified format
 and arguments.
 
@@ -10314,18 +10425,6 @@ is disabled for the WARN level.
 
 @param marker The marker specific to this log statement
 @param msg    the message string to be logged",0,"# Method  public void warn(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
-"Log a message at the WARN level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the WARN level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void warn(String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void warn(Marker marker, String msg)    (Logger.java)",1
 "Log a message at the WARN level according to the specified format
 and arguments.
 
@@ -10783,7 +10882,7 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log",0,"# Method  public void warn(String format, Object... arguments)    (Logger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",0
+@param t      the exception (throwable) to log",0,"# Method  public void warn(String format, Object... arguments)    (Logger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Log a message at the WARN level.
 
 @param msg the message string to be logged","Log a message at the ERROR level.
@@ -11151,7 +11250,7 @@ consideration.
 
 @param marker    the marker data specific to this log statement
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public void debug(Marker marker, String msg)    (Logger.java)","# Method  public void error(Marker marker, String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public void debug(Marker marker, String msg)    (Logger.java)","# Method  public void error(Marker marker, String format, Object... arguments)    (Logger.java)",1
 "Log a message with the specific Marker at the DEBUG level.
 
 @param marker the marker data specific to this log statement
@@ -11281,7 +11380,7 @@ consideration.
 
 @param marker    the marker data specific to this log statement
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public void error(Marker marker, String msg)    (Logger.java)","# Method  public void error(Marker marker, String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public void error(Marker marker, String msg)    (Logger.java)","# Method  public void error(Marker marker, String format, Object... arguments)    (Logger.java)",1
 "Log a message with the specific Marker at the ERROR level.
 
 @param marker The marker specific to this log statement
@@ -11306,18 +11405,6 @@ is disabled for the ERROR level.
 "Log a message with the specific Marker at the INFO level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged","Log a message at the ERROR level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the ERROR level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void error(String format, Object arg1, Object arg2)    (Logger.java)",1
-"Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
 @param msg    the message string to be logged","Log a message at the ERROR level.
 
 @param msg the message string to be logged",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)",# Method  public void error(String msg)    (Logger.java),1
@@ -11332,18 +11419,6 @@ is disabled for the WARN level.
 
 @param format the format string
 @param arg    the argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void warn(String format, Object arg)    (Logger.java)",1
-"Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged","Log a message at the WARN level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the WARN level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void warn(String format, Object arg1, Object arg2)    (Logger.java)",1
 "Log a message with the specific Marker at the INFO level.
 
 @param marker The marker specific to this log statement
@@ -11392,17 +11467,6 @@ marker data is also taken into consideration.
 "Log a message with the specific Marker at the INFO level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged","This method is similar to #error(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void error(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)",1
-"Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
 @param msg    the message string to be logged","This method is similar to #error(String, Throwable)
 method except that the marker data is also taken into
 consideration.
@@ -11422,17 +11486,6 @@ marker data is also taken into consideration.
 "Log a message with the specific Marker at the INFO level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged","This method is similar to #info(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void info(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)",1
-"Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
 @param msg    the message string to be logged","This method is similar to #info(String, Throwable) method
 except that the marker data is also taken into consideration.
 
@@ -11448,17 +11501,6 @@ marker data is also taken into consideration.
 @param marker the marker data specific to this log statement
 @param format the format string
 @param arg    the argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
-"Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged","This method is similar to #warn(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void info(Marker marker, String msg)    (Logger.java)","# Method  public void warn(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)",1
 "Log a message with the specific Marker at the INFO level.
 
 @param marker The marker specific to this log statement
@@ -12031,18 +12073,6 @@ is disabled for the ERROR level.
 "Log a message with the specific Marker at the WARN level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged","Log a message at the ERROR level according to the specified format
-and arguments.
-
-This form avoids superfluous object creation when the logger
-is disabled for the ERROR level.
-
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void warn(Marker marker, String msg)    (Logger.java)","# Method  public void error(String format, Object arg1, Object arg2)    (Logger.java)",1
-"Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
 @param msg    the message string to be logged","Log a message at the ERROR level.
 
 @param msg the message string to be logged",-1,"# Method  public void warn(Marker marker, String msg)    (Logger.java)",# Method  public void error(String msg)    (Logger.java),1
@@ -12073,17 +12103,6 @@ marker data is also taken into consideration.
 "Log a message with the specific Marker at the WARN level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged","This method is similar to #error(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void warn(Marker marker, String msg)    (Logger.java)","# Method  public void error(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)",1
-"Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
 @param msg    the message string to be logged","This method is similar to #error(String, Throwable)
 method except that the marker data is also taken into
 consideration.
@@ -12100,17 +12119,6 @@ marker data is also taken into consideration.
 @param marker the marker data specific to this log statement
 @param format the format string
 @param arg    the argument",-1,"# Method  public void warn(Marker marker, String msg)    (Logger.java)","# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
-"Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged","This method is similar to #warn(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument",-1,"# Method  public void warn(Marker marker, String msg)    (Logger.java)","# Method  public void warn(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)",1
 "Log a message with the specific Marker at the WARN level.
 
 @param marker The marker specific to this log statement
@@ -12529,50 +12537,6 @@ created earlier, return the previously created instance.
 
 @param name the name of the marker to be created
 @return a Marker instance",-1,# Method  Marker getMarker(String name)    (IMarkerFactory.java),# Method  public Marker getMarker(String name)    (BasicMarkerFactory.java),1
-"Manufacture a Marker instance by name. If the instance has been
-created earlier, return the previously created instance.
-
-Null name values are not allowed.
-
-@param name the name of the marker to be created, null value is
-not allowed.
-
-@return a Marker instance","Put a diagnostic context value (the val parameter) as identified with the
-key parameter into the current thread's diagnostic context map. The
-key parameter cannot be null. The val parameter
-can be null only if the underlying implementation supports it.
-
-This method delegates all work to the MDC of the underlying logging system.
-
-This method return a Closeable object who can remove key when
-close is called.
-
-Useful with Java 7 for example :
-
-try(MDC.MDCCloseable closeable = MDC.putCloseable(key, value)) {
-....
-}
-
-@param key non-null key
-@param val value to put in the map
-@return a Closeable who can remove key when close
-is called.
-
-@throws IllegalArgumentException
-in case the ""key"" parameter is null",-1,# Method  Marker getMarker(String name)    (IMarkerFactory.java),"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)",1
-"Manufacture a Marker instance by name. If the instance has been
-created earlier, return the previously created instance.
-
-Null name values are not allowed.
-
-@param name the name of the marker to be created, null value is
-not allowed.
-
-@return a Marker instance","Return a logger named according to the name parameter using the statically
-bound ILoggerFactory instance.
-
-@param name The name of the logger.
-@return logger",-1,# Method  Marker getMarker(String name)    (IMarkerFactory.java),# Method  public static Logger getLogger(String name)    (LoggerFactory.java),1
 "Manufacture a Marker instance by name. If the instance has been
 created earlier, return the previously created instance.
 
@@ -15679,21 +15643,6 @@ in case the ""key"" parameter is null",0,"# Method  public void log(Marker marke
 typically the logger class, logger bridge or a logger wrapper.
 @param level One of the level integers defined in this interface
 @param message The message for the log event
-@param t Throwable associated with the log event, may be null.","Remove the diagnostic context identified by the key parameter using
-the underlying system's MDC implementation. The key parameter
-cannot be null. This method does nothing if there is no previous value
-associated with key.
-
-@param key
-@throws IllegalArgumentException
-in case the ""key"" parameter is null",-1,"# Method  public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t)    (LocationAwareLogger.java)",# Method  public static void remove(String key) throws IllegalArgumentException    (MDC.java),1
-"Printing method with support for location information.
-
-@param marker The marker to be used for this event, may be null.
-@param fqcn The fully qualified class name of the logger instance,
-typically the logger class, logger bridge or a logger wrapper.
-@param level One of the level integers defined in this interface
-@param message The message for the log event
 @param t Throwable associated with the log event, may be null.","Return an appropriate Logger instance as specified by the
 name parameter.
 
@@ -16085,6 +16034,11 @@ except that the marker data is also taken into consideration.
 @param msg    the message accompanying the exception
 @param t      the exception (throwable) to log",0,"# Method  public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t)    (LocationAwareLogger.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",1
 "Prints a warning message on the console if multiple bindings were found on the class path.
+No reporting is done otherwise.","Log a message with the specific Marker at the ERROR level.
+
+@param marker The marker specific to this log statement
+@param msg    the message string to be logged",-1,# Method  private static void reportMultipleBindingAmbiguity(Set<URL> binderPathSet)    (LoggerFactory.java),"# Method  public void error(Marker marker, String msg)    (Logger.java)",1
+"Prints a warning message on the console if multiple bindings were found on the class path.
 No reporting is done otherwise.","Similar to #isErrorEnabled() method except that the
 marker data is also taken into consideration.
 
@@ -16261,7 +16215,7 @@ marker data is also taken into consideration.
 
 @param marker The marker data to take into consideration
 @return True if this Logger is enabled for the ERROR level,
-false otherwise.",0,"# Method  public void put(String key, String val)    (BasicMDCAdapter.java)",# Method  public boolean isErrorEnabled(Marker marker)    (Logger.java),0
+false otherwise.",0,"# Method  public void put(String key, String val)    (BasicMDCAdapter.java)",# Method  public boolean isErrorEnabled(Marker marker)    (Logger.java),1
 "Put a context value (the val parameter) as identified with
 the key parameter into the current thread's context map.
 Note that contrary to log4j, the val parameter can be null.
@@ -16275,7 +16229,7 @@ data is also taken into consideration.
 
 @param marker The marker data to take into consideration
 @return True if this Logger is enabled for the WARN level,
-false otherwise.",0,"# Method  public void put(String key, String val)    (BasicMDCAdapter.java)",# Method  public boolean isWarnEnabled(Marker marker)    (Logger.java),0
+false otherwise.",0,"# Method  public void put(String key, String val)    (BasicMDCAdapter.java)",# Method  public boolean isWarnEnabled(Marker marker)    (Logger.java),1
 "Put a context value (the val parameter) as identified with
 the key parameter into the current thread's context map.
 Note that contrary to log4j, the val parameter can be null.
@@ -17813,7 +17767,7 @@ This form avoids superfluous object creation when the logger
 is disabled for the ERROR level.
 
 @param format the format string
-@param arg    the argument",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void error(String format, Object arg)    (Logger.java)",0
+@param arg    the argument",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void error(String format, Object arg)    (Logger.java)",1
 "Put a diagnostic context value (the val parameter) as identified with the
 key parameter into the current thread's diagnostic context map. The
 key parameter cannot be null. The val parameter
@@ -17973,7 +17927,7 @@ even if this logger is disabled for INFO. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void info(String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void info(String format, Object... arguments)    (Logger.java)",1
 "Put a diagnostic context value (the val parameter) as identified with the
 key parameter into the current thread's diagnostic context map. The
 key parameter cannot be null. The val parameter
@@ -18068,7 +18022,7 @@ even if this logger is disabled for WARN. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void warn(String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void warn(String format, Object... arguments)    (Logger.java)",1
 "Put a diagnostic context value (the val parameter) as identified with the
 key parameter into the current thread's diagnostic context map. The
 key parameter cannot be null. The val parameter
@@ -18505,7 +18459,7 @@ marker data is also taken into consideration.
 
 @param marker the marker data specific to this log statement
 @param format the format string
-@param arg    the argument",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void info(Marker marker, String format, Object arg)    (Logger.java)",1
+@param arg    the argument",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void info(Marker marker, String format, Object arg)    (Logger.java)",0
 "Put a diagnostic context value (the val parameter) as identified with the
 key parameter into the current thread's diagnostic context map. The
 key parameter cannot be null. The val parameter
@@ -18620,7 +18574,7 @@ marker data is also taken into consideration.
 
 @param marker the marker data specific to this log statement
 @param format the format string
-@param arg    the argument",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",1
+@param arg    the argument",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void warn(Marker marker, String format, Object arg)    (Logger.java)",0
 "Put a diagnostic context value (the val parameter) as identified with the
 key parameter into the current thread's diagnostic context map. The
 key parameter cannot be null. The val parameter
@@ -18708,19 +18662,6 @@ except that the marker data is also taken into consideration.
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
 @param t      the exception (throwable) to log",0,"# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)","# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",0
-"Remove the diagnostic context identified by the key parameter using
-the underlying system's MDC implementation. The key parameter
-cannot be null. This method does nothing if there is no previous value
-associated with key.
-
-@param key
-@throws IllegalArgumentException
-in case the ""key"" parameter is null","Add a reference to another Marker.
-
-@param reference
-a reference to another marker
-@throws IllegalArgumentException
-if 'reference' is null",-1,# Method  public static void remove(String key) throws IllegalArgumentException    (MDC.java),# Method  public void add(Marker reference)    (Marker.java),1
 "Remove the diagnostic context identified by the key parameter using
 the underlying system's MDC implementation. The key parameter
 cannot be null. This method does nothing if there is no previous value
@@ -19305,12 +19246,34 @@ parameter must only contain keys and values of type String.
 @param contextMap must contain only keys and values of type String
 
 @since 1.5.1",-1,"# Method  public Map<String, String> getCopyOfContextMap()    (MDCAdapter.java)","# Method  public void setContextMap(Map<String, String> contextMap)    (MDCAdapter.java)",1
+"Return a copy of the current thread's context map, with keys and
+values of type String. Returned value may be null.
+
+@return A copy of the current thread's context map. May be null.
+@since 1.5.1","Set the current thread's context map by first clearing any existing map and
+then copying the map passed as parameter. The context map passed as
+parameter must only contain keys and values of type String.
+
+@param contextMap
+must contain only keys and values of type String
+@since 1.5.1",-1,"# Method  public Map<String, String> getCopyOfContextMap()    (MDCAdapter.java)","# Method  public static void setContextMap(Map<String, String> contextMap)    (MDC.java)",1
 "Return a copy of the current thread's context map, with keys and values of
 type String. Returned value may be null.
 
 @return A copy of the current thread's context map. May be null.
 @since 1.5.1","Return a copy of the current thread's context map.
 Returned value may be null.",-1,"# Method  public static Map<String, String> getCopyOfContextMap()    (MDC.java)","# Method  public Map<String, String> getCopyOfContextMap()    (BasicMDCAdapter.java)",1
+"Return a copy of the current thread's context map, with keys and values of
+type String. Returned value may be null.
+
+@return A copy of the current thread's context map. May be null.
+@since 1.5.1","Set the current thread's context map by first clearing any existing map and
+then copying the map passed as parameter. The context map passed as
+parameter must only contain keys and values of type String.
+
+@param contextMap
+must contain only keys and values of type String
+@since 1.5.1",-1,"# Method  public static Map<String, String> getCopyOfContextMap()    (MDC.java)","# Method  public static void setContextMap(Map<String, String> contextMap)    (MDC.java)",1
 "Return a logger named corresponding to the class passed as parameter, using
 the statically bound ILoggerFactory instance.
 
@@ -19512,28 +19475,6 @@ See also #format(String, Object),
 @author Ceki G&uuml;lc&uuml;
 @author Joern Huxhorn
 ",0,# Method  public Logger getLogger(String name)    (ILoggerFactory.java),# Class  MessageFormatter    (MessageFormatter.java),0
-"Return an appropriate Logger instance as specified by the
-name parameter.
-
-If the name parameter is equal to Logger#ROOT_LOGGER_NAME, that is
-the string value ""ROOT"" (case insensitive), then the root logger of the
-underlying logging system is returned.
-
-Null-valued name arguments are considered invalid.
-
-Certain extremely simple logging systems, e.g. NOP, may always
-return the same logger instance regardless of the requested name.
-
-@param name the name of the Logger to return
-@return a Logger instance","Get the diagnostic context identified by the key parameter. The
-key parameter cannot be null.
-
-This method delegates all work to the MDC of the underlying logging system.
-
-@param key
-@return the string value identified by the key parameter.
-@throws IllegalArgumentException
-in case the ""key"" parameter is null",-1,# Method  public Logger getLogger(String name)    (ILoggerFactory.java),# Method  public static String get(String key) throws IllegalArgumentException    (MDC.java),1
 "Return an appropriate Logger instance as specified by the
 name parameter.
 
@@ -20754,6 +20695,13 @@ compile time.
 
 @return the MDcAdapter instance currently in use.
 @since 1.4.2",-1,# Method  public static IMarkerFactory getIMarkerFactory()    (MarkerFactory.java),# Method  public static MDCAdapter getMDCAdapter()    (MDC.java),1
+"Return the IMarkerFactoryinstance in use.
+
+The IMarkerFactory instance is usually bound with this class at
+compile time.
+
+@return the IMarkerFactory instance in use","There is no point in creating multiple instances of NOPLOgger,
+except by derived classes, hence the protected  access for the constructor.",-1,# Method  public static IMarkerFactory getIMarkerFactory()    (MarkerFactory.java),# Method  protected NOPLogger()    (NOPLogger.java),1
 "Return the delegate logger instance if set. Otherwise, return a NOPLogger
 instance.","Is the logger instance enabled for the ERROR level?
 
@@ -21090,7 +21038,7 @@ If the current thread does not have a context map it is created as a side
 effect of this call.
 
 @throws IllegalArgumentException
-in case the ""key"" parameter is null",0,# Method  public boolean isDebugEnabled(Marker marker)    (Logger.java),"# Method  public void put(String key, String val)    (BasicMDCAdapter.java)",0
+in case the ""key"" parameter is null",0,# Method  public boolean isDebugEnabled(Marker marker)    (Logger.java),"# Method  public void put(String key, String val)    (BasicMDCAdapter.java)",1
 "Similar to #isDebugEnabled() method except that the
 marker data is also taken into account.
 
@@ -22877,6 +22825,21 @@ This method allows the developer to intterogate this binder's intention
 which may be different from the ILoggerFactory instance it is able to
 yield in practice. The discrepency should only occur in case of errors.
 
+@return the class name of the intended ILoggerFactory instance","Implementations of this interface are used to manufacture Marker
+instances.
+
+See the section <a href=""http://slf4j.org/faq.html#3"">Implementing
+the SLF4J API in the FAQ for details on how to make your logging
+system conform to SLF4J.
+
+@author Ceki G&uuml;lc&uuml;",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),# Interface  IMarkerFactory    (IMarkerFactory.java),1
+"The String form of the ILoggerFactory object that this
+LoggerFactoryBinder instance is intended to return.
+
+This method allows the developer to intterogate this binder's intention
+which may be different from the ILoggerFactory instance it is able to
+yield in practice. The discrepency should only occur in case of errors.
+
 @return the class name of the intended ILoggerFactory instance","In order to call SecurityManager#getClassContext(), which is a
 protected method, we add this wrapper which allows the method to be visible
 inside this package.",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),# Class  ClassContextSecurityManager    (Util.java),1
@@ -22996,6 +22959,25 @@ arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
 @param arguments a list of 3 or more arguments",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),"# Method  public void info(String format, Object... arguments)    (Logger.java)",1
+"The String form of the ILoggerFactory object that this
+LoggerFactoryBinder instance is intended to return.
+
+This method allows the developer to intterogate this binder's intention
+which may be different from the ILoggerFactory instance it is able to
+yield in practice. The discrepency should only occur in case of errors.
+
+@return the class name of the intended ILoggerFactory instance","Log a message at the TRACE level according to the specified format
+and arguments.
+
+This form avoids superfluous string concatenation when the logger
+is disabled for the TRACE level. However, this variant incurs the hidden
+(and relatively small) cost of creating an Object[] before invoking the method,
+even if this logger is disabled for TRACE. The variants taking #trace(String, Object) one and
+#trace(String, Object, Object) two arguments exist solely in order to avoid this hidden cost.
+
+@param format    the format string
+@param arguments a list of 3 or more arguments
+@since 1.4",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),"# Method  public void trace(String format, Object... arguments)    (Logger.java)",1
 "The String form of the ILoggerFactory object that this
 LoggerFactoryBinder instance is intended to return.
 
@@ -23152,17 +23134,6 @@ The IMarkerFactory instance is usually bound with this class at
 compile time.
 
 @return the IMarkerFactory instance in use",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),# Method  public static IMarkerFactory getIMarkerFactory()    (MarkerFactory.java),1
-"The String form of the ILoggerFactory object that this
-LoggerFactoryBinder instance is intended to return.
-
-This method allows the developer to intterogate this binder's intention
-which may be different from the ILoggerFactory instance it is able to
-yield in practice. The discrepency should only occur in case of errors.
-
-@return the class name of the intended ILoggerFactory instance","Returns an Iterator which can be used to iterate over the references of this
-marker. An empty iterator is returned when this marker has no references.
-
-@return Iterator over the references of this marker",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),# Method  public Iterator<Marker> iterator()    (Marker.java),1
 "The String form of the ILoggerFactory object that this
 LoggerFactoryBinder instance is intended to return.
 
@@ -23448,6 +23419,22 @@ marker data is also taken into consideration.
 @param format the format string
 @param arg    the argument
 @since 1.4",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),"# Method  public void trace(Marker marker, String format, Object arg)    (Logger.java)",1
+"The String form of the ILoggerFactory object that this
+LoggerFactoryBinder instance is intended to return.
+
+This method allows the developer to intterogate this binder's intention
+which may be different from the ILoggerFactory instance it is able to
+yield in practice. The discrepency should only occur in case of errors.
+
+@return the class name of the intended ILoggerFactory instance","This method is similar to #trace(String, Object, Object)
+method except that the marker data is also taken into
+consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg1   the first argument
+@param arg2   the second argument
+@since 1.4",-1,# Method  public String getLoggerFactoryClassStr()    (LoggerFactoryBinder.java),"# Method  public void trace(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)",1
 "The String form of the ILoggerFactory object that this
 LoggerFactoryBinder instance is intended to return.
 
@@ -23847,17 +23834,6 @@ even in case of a logger name mismatch.
 @return logger
 
 @see <a href=""http://www.slf4j.org/codes.html#loggerNameMismatch"">Detected logger name mismatch",-1,# Method  public String getMarkerFactoryClassStr()    (MarkerFactoryBinder.java),# Method  public static Logger getLogger(Class<?> clazz)    (LoggerFactory.java),1
-"The String form of the IMarkerFactory object that this
-MarkerFactoryBinder instance is intended to return.
-
-This method allows the developer to intterogate this binder's intention
-which may be different from the IMarkerFactory instance it is able to
-return. Such a discrepency should only occur in case of errors.
-
-@return the class name of the intended IMarkerFactory instance","Returns an Iterator which can be used to iterate over the references of this
-marker. An empty iterator is returned when this marker has no references.
-
-@return Iterator over the references of this marker",-1,# Method  public String getMarkerFactoryClassStr()    (MarkerFactoryBinder.java),# Method  public Iterator<Marker> iterator()    (Marker.java),1
 "The String form of the IMarkerFactory object that this
 MarkerFactoryBinder instance is intended to return.
 
@@ -24304,6 +24280,15 @@ This class is meant to provide a *dummy* StaticMarkerBinder to the slf4j-api mod
 Real implementations are found in  each SLF4J binding project, e.g. slf4j-nop,
 slf4j-simple, slf4j-log4j12 etc.
 
+@author Ceki G&uuml;lc&uuml;","There is no point in creating multiple instances of NOPLOgger,
+except by derived classes, hence the protected  access for the constructor.",-1,# Class  StaticMarkerBinder    (StaticMarkerBinder.java),# Method  protected NOPLogger()    (NOPLogger.java),1
+"The binding of MarkerFactory class with an actual instance of
+IMarkerFactory is performed using information returned by this class.
+
+This class is meant to provide a *dummy* StaticMarkerBinder to the slf4j-api module.
+Real implementations are found in  each SLF4J binding project, e.g. slf4j-nop,
+slf4j-simple, slf4j-log4j12 etc.
+
 @author Ceki G&uuml;lc&uuml;","This class is only a stub. Real implementations are found in
 each SLF4J binding project, e.g. slf4j-nop, slf4j-log4j12 etc.
 
@@ -24465,6 +24450,23 @@ slf4j-log4j12 etc.
 each SLF4J binding project, e.g. slf4j-nop, slf4j-log4j12 etc.
 
 @author Ceki G&uuml;lc&uuml;",-1,# Class  StaticLoggerBinder    (StaticLoggerBinder.java),# Class  StaticMDCBinder    (StaticMDCBinder.java),1
+"This adapter is an empty implementation of the MDCAdapter interface.
+It is used for all logging systems which do not support mapped
+diagnostic contexts such as JDK14, simple and NOP.
+
+@author Ceki G&uuml;lc&uuml;
+
+@since 1.4.1","Basic MDC implementation, which can be used with logging systems that lack
+out-of-the-box MDC support.
+
+This code was initially inspired by  logback's LogbackMDCAdapter. However,
+LogbackMDCAdapter has evolved and is now considerably more sophisticated.
+
+@author Ceki Gulcu
+@author Maarten Bosteels
+@author Lukasz Cwik
+
+@since 1.5.0",-1,# Class  NOPMDCAdapter    (NOPMDCAdapter.java),# Class  BasicMDCAdapter    (BasicMDCAdapter.java),1
 "This class hides and serves as a substitute for the underlying logging
 system's MDC implementation.
 
@@ -24521,6 +24523,24 @@ marker data is also taken into consideration.
 
 @return True if this Logger is enabled for the ERROR level,
 false otherwise.",-1,"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)",# Method  public boolean isErrorEnabled()    (Logger.java),1
+"This method is similar to #debug(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument","Is the logger instance enabled for the INFO level?
+
+@return True if this Logger is enabled for the INFO level,
+false otherwise.",-1,"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)",# Method  public boolean isInfoEnabled()    (Logger.java),1
+"This method is similar to #debug(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
+@param arg    the argument","Is the logger instance enabled for the WARN level?
+
+@return True if this Logger is enabled for the WARN level,
+false otherwise.",-1,"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)",# Method  public boolean isWarnEnabled()    (Logger.java),1
 "This method is similar to #debug(String, Object) method except that the
 marker data is also taken into consideration.
 
@@ -24752,7 +24772,7 @@ try(MDC.MDCCloseable closeable = MDC.putCloseable(key, value)) {
 is called.
 
 @throws IllegalArgumentException
-in case the ""key"" parameter is null",0,"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)","# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)",1
+in case the ""key"" parameter is null",0,"# Method  public void debug(Marker marker, String format, Object arg)    (Logger.java)","# Method  public static MDCCloseable putCloseable(String key, String val) throws IllegalArgumentException    (MDC.java)",0
 "This method is similar to #debug(String, Object) method except that the
 marker data is also taken into consideration.
 
@@ -25144,28 +25164,6 @@ consideration.
 @param marker the marker data specific to this log statement
 @param format the format string
 @param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the INFO level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void debug(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void info(Marker marker, String msg)    (Logger.java)",1
-"This method is similar to #debug(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void debug(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void warn(Marker marker, String msg)    (Logger.java)",1
-"This method is similar to #debug(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
 @param arg2   the second argument","Markers are named objects used to enrich log statements. Conforming logging
 system Implementations of SLF4J determine how information conveyed by markers
 are used, if at all. In particular, many conforming logging systems ignore
@@ -25484,7 +25482,7 @@ This form avoids superfluous object creation when the logger
 is disabled for the ERROR level.
 
 @param format the format string
-@param arg    the argument",0,"# Method  public void debug(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(String format, Object arg)    (Logger.java)",0
+@param arg    the argument",0,"# Method  public void debug(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(String format, Object arg)    (Logger.java)",1
 "This method is similar to #debug(String, Object...)
 method except that the marker data is also taken into
 consideration.
@@ -25621,7 +25619,7 @@ consideration.
 @param arguments a list of 3 or more arguments","Log a message with the specific Marker at the ERROR level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged",0,"# Method  public void debug(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",0
+@param msg    the message string to be logged",0,"# Method  public void debug(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
 "This method is similar to #debug(String, Object...)
 method except that the marker data is also taken into
 consideration.
@@ -25879,7 +25877,7 @@ is disabled for the ERROR level.
 
 @param format the format string
 @param arg1   the first argument
-@param arg2   the second argument",0,"# Method  public void debug(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void error(String format, Object arg1, Object arg2)    (Logger.java)",0
+@param arg2   the second argument",0,"# Method  public void debug(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void error(String format, Object arg1, Object arg2)    (Logger.java)",1
 "This method is similar to #debug(String, Throwable) method except that the
 marker data is also taken into consideration.
 
@@ -26396,6 +26394,15 @@ marker data is also taken into consideration.
 
 @param marker the marker data specific to this log statement
 @param format the format string
+@param arg    the argument","Is the logger instance enabled for the WARN level?
+
+@return True if this Logger is enabled for the WARN level,
+false otherwise.",-1,"# Method  public void info(Marker marker, String format, Object arg)    (Logger.java)",# Method  public boolean isWarnEnabled()    (Logger.java),1
+"This method is similar to #info(String, Object) method except that the
+marker data is also taken into consideration.
+
+@param marker the marker data specific to this log statement
+@param format the format string
 @param arg    the argument","Log a message at the ERROR level according to the specified format
 and argument.
 
@@ -26796,17 +26803,6 @@ consideration.
 @param marker the marker data specific to this log statement
 @param format the format string
 @param arg1   the first argument
-@param arg2   the second argument","Log a message with the specific Marker at the WARN level.
-
-@param marker The marker specific to this log statement
-@param msg    the message string to be logged",-1,"# Method  public void info(Marker marker, String format, Object arg1, Object arg2)    (Logger.java)","# Method  public void warn(Marker marker, String msg)    (Logger.java)",1
-"This method is similar to #info(String, Object, Object)
-method except that the marker data is also taken into
-consideration.
-
-@param marker the marker data specific to this log statement
-@param format the format string
-@param arg1   the first argument
 @param arg2   the second argument","Markers are named objects used to enrich log statements. Conforming logging
 system Implementations of SLF4J determine how information conveyed by markers
 are used, if at all. In particular, many conforming logging systems ignore
@@ -27009,7 +27005,7 @@ This form avoids superfluous object creation when the logger
 is disabled for the ERROR level.
 
 @param format the format string
-@param arg    the argument",0,"# Method  public void info(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(String format, Object arg)    (Logger.java)",0
+@param arg    the argument",0,"# Method  public void info(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(String format, Object arg)    (Logger.java)",1
 "This method is similar to #info(String, Object...)
 method except that the marker data is also taken into
 consideration.
@@ -27099,7 +27095,7 @@ consideration.
 @param arguments a list of 3 or more arguments","Log a message with the specific Marker at the ERROR level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged",0,"# Method  public void info(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",0
+@param msg    the message string to be logged",0,"# Method  public void info(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
 "This method is similar to #info(String, Object...)
 method except that the marker data is also taken into
 consideration.
@@ -27274,17 +27270,6 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log","Does this marker contain the marker named 'name'?
-
-If 'name' is null the returned value is always false.
-
-@param name The marker name to test for inclusion.
-@return Whether this marker contains the other marker.",-1,"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)",# Method  public boolean contains(String name)    (Marker.java),1
-"This method is similar to #info(String, Throwable) method
-except that the marker data is also taken into consideration.
-
-@param marker the marker data for this log statement
-@param msg    the message accompanying the exception
 @param t      the exception (throwable) to log","Is the logger instance enabled for the ERROR level?
 
 @return True if this Logger is enabled for the ERROR level,
@@ -27341,7 +27326,7 @@ even if this logger is disabled for ERROR. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void error(String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void error(String format, Object... arguments)    (Logger.java)",1
 "This method is similar to #info(String, Throwable) method
 except that the marker data is also taken into consideration.
 
@@ -27385,7 +27370,7 @@ even if this logger is disabled for WARN. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void warn(String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public void info(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void warn(String format, Object... arguments)    (Logger.java)",1
 "This method is similar to #info(String, Throwable) method
 except that the marker data is also taken into consideration.
 
@@ -27776,7 +27761,7 @@ marker data is also taken into consideration.
 @since 1.4","Log a message with the specific Marker at the ERROR level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged",0,"# Method  public void trace(Marker marker, String format, Object arg)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",0
+@param msg    the message string to be logged",0,"# Method  public void trace(Marker marker, String format, Object arg)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
 "This method is similar to #trace(String, Object) method except that the
 marker data is also taken into consideration.
 
@@ -30266,7 +30251,7 @@ This form avoids superfluous object creation when the logger
 is disabled for the ERROR level.
 
 @param format the format string
-@param arg    the argument",0,"# Method  public void warn(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(String format, Object arg)    (Logger.java)",0
+@param arg    the argument",0,"# Method  public void warn(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(String format, Object arg)    (Logger.java)",1
 "This method is similar to #warn(String, Object...)
 method except that the marker data is also taken into
 consideration.
@@ -30309,7 +30294,7 @@ consideration.
 @param arguments a list of 3 or more arguments","Log a message with the specific Marker at the ERROR level.
 
 @param marker The marker specific to this log statement
-@param msg    the message string to be logged",0,"# Method  public void warn(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",0
+@param msg    the message string to be logged",0,"# Method  public void warn(Marker marker, String format, Object... arguments)    (Logger.java)","# Method  public void error(Marker marker, String msg)    (Logger.java)",1
 "This method is similar to #warn(String, Object...)
 method except that the marker data is also taken into
 consideration.
@@ -30406,17 +30391,6 @@ except that the marker data is also taken into consideration.
 
 @param marker the marker data for this log statement
 @param msg    the message accompanying the exception
-@param t      the exception (throwable) to log","Does this marker contain the marker named 'name'?
-
-If 'name' is null the returned value is always false.
-
-@param name The marker name to test for inclusion.
-@return Whether this marker contains the other marker.",-1,"# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)",# Method  public boolean contains(String name)    (Marker.java),1
-"This method is similar to #warn(String, Throwable) method
-except that the marker data is also taken into consideration.
-
-@param marker the marker data for this log statement
-@param msg    the message accompanying the exception
 @param t      the exception (throwable) to log","Is the logger instance enabled for the ERROR level?
 
 @return True if this Logger is enabled for the ERROR level,
@@ -30464,7 +30438,7 @@ even if this logger is disabled for ERROR. The variants taking
 arguments exist solely in order to avoid this hidden cost.
 
 @param format    the format string
-@param arguments a list of 3 or more arguments",0,"# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void error(String format, Object... arguments)    (Logger.java)",0
+@param arguments a list of 3 or more arguments",0,"# Method  public void warn(Marker marker, String msg, Throwable t)    (Logger.java)","# Method  public void error(String format, Object... arguments)    (Logger.java)",1
 "This method is similar to #warn(String, Throwable) method
 except that the marker data is also taken into consideration.
 

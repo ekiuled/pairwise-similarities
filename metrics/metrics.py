@@ -1,6 +1,6 @@
 from helpers import dataset_parser
 from similarities.similarity import Similarity
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 import numpy as np
 
@@ -20,13 +20,22 @@ def calculated(func):
     return wrapper
 
 
-def test_set(func):
-    def wrapper(train, test, similarity, verbose, *args, **kwargs):
+def train_test(func):
+    def wrapper(train, test, similarity, verbose, name):
         x_train, y_train = dataset_parser.dataset_from_file(train)
         x_test, y_test = dataset_parser.dataset_from_file(test)
-        similarity.train(x_train, y_train, verbose)
+        similarity.train(x_train, y_train, verbose, name)
         y_pred = similarity.run_similarity(x_test)
-        return func(similarity, y_test, y_pred, *args, **kwargs)
+        return func(similarity, y_test, y_pred)
+    return wrapper
+
+
+def test_set(func):
+    def wrapper(test, similarity, name):
+        x_test, y_test = dataset_parser.dataset_from_file(test)
+        similarity.load(name)
+        y_pred = similarity.run_similarity(x_test)
+        return func(similarity, y_test, y_pred)
     return wrapper
 
 
@@ -40,11 +49,19 @@ def shuffled_test_set(func):
     return wrapper
 
 
-@test_set
 def get_metrics(similarity, labels, scores):
     """Get Accuracy, F1 and ROC AUC."""
 
     predictions = similarity.predict(scores)
+    cm = confusion_matrix(labels, predictions)
+    true_positives = int(cm[1][1])
+    true_negatives = int(cm[0][0])
+    false_positives = int(cm[0][1])
+    false_negatives = int(cm[1][0])
     return {'accuracy': accuracy_score(labels, predictions),
             'f1': f1_score(labels, predictions),
-            'roc': roc_auc_score(labels, scores)}
+            'roc': roc_auc_score(labels, scores),
+            'tp': true_positives,
+            'tn': true_negatives,
+            'fp': false_positives,
+            'fn': false_negatives}

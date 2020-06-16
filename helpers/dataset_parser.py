@@ -1,6 +1,7 @@
 import re
 import csv
 import itertools
+import random
 
 
 def comment(string):
@@ -49,7 +50,7 @@ def generate_pairs(comments, groups):
     n = len(comments)
     pairs = []
 
-    for i in range(0, n):
+    for i in range(n):
         for j in range(i + 1, n):
             if groups[i] and groups[j]:
                 pairs.append([comments[i], comments[j], int(groups[i] == groups[j])])
@@ -65,7 +66,7 @@ def generate_pairs_with_types(comments, groups, types):
     n = len(comments)
     pairs = []
 
-    for i in range(0, n):
+    for i in range(n):
         for j in range(i + 1, n):
             if groups[i] and groups[j]:
                 pairs.append([comments[i], comments[j], int(groups[i] == groups[j]), types[i], types[j]])
@@ -73,6 +74,27 @@ def generate_pairs_with_types(comments, groups, types):
                 pairs.append([comments[i], comments[j], -1, types[i], types[j]])
 
     return pairs
+
+
+def generate_triplets(comments, groups):
+    """Generate comment triplets from a list of comments with their group tags."""
+
+    n = len(comments)
+    triplets = []
+
+    for i in range(n):
+        positive = []
+        negative = []
+        for j in range(i + 1, n):
+            if groups[i] == groups[j]:
+                positive.append(comments[j])
+            else:
+                negative.append(comments[j])
+        if negative:
+            for p in positive:
+                triplets.append([comments[i], p, random.choice(negative)])
+
+    return triplets
 
 
 def list_to_file(list, filename):
@@ -140,6 +162,16 @@ def parse_full(file_in, file_out='_data.csv'):
 
     comments, groups, types = extract(file_in, True)
     data = generate_pairs_with_types(comments, groups, types)
+    data.sort()
+    data = list(d for d, _ in itertools.groupby(data))
+    list_to_file(data, file_out)
+
+
+def parse_triplets(file_in, file_out='_data.csv'):
+    """Generate a dataset of unique comment triplets and write it to a file."""
+
+    comments, groups, _ = extract(file_in)
+    data = generate_triplets(comments, groups)
     data.sort()
     data = list(d for d, _ in itertools.groupby(data))
     list_to_file(data, file_out)

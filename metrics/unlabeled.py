@@ -1,25 +1,27 @@
 from helpers import dataset_parser
-from sklearn.metrics import confusion_matrix
 from helpers.similarity_generator import all_algorithms
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix
 from tabulate import tabulate
 
 
-def compare_results(train, test, similarity, cache=None):
+def compare_results(test, similarity, cache=None):
     """Predict similarity on a partially labeled test set, cache results if `cache` name is set.
     Return several metrics."""
 
-    x_train, y_train = dataset_parser.dataset_from_file(train)
     x_test, y_test = dataset_parser.dataset_from_file(test)
-    similarity.train(x_train, y_train)
-    y_pred = similarity.predict(similarity.run_similarity(x_test))
+    y_score = similarity.run_similarity(x_test)
+    y_pred = similarity.predict(y_score)
     cm = confusion_matrix(y_test, y_pred, [0, 1, -1])
-    true_positives = cm[0][0]
-    true_negatives = cm[1][1]
-    false_positives = cm[0][1]
-    false_negatives = cm[1][0]
-    unlabeled_positives = cm[2][1]
-    accuracy = (true_positives+true_negatives)/(true_positives+true_negatives+false_positives+false_negatives)
-    f1 = 2*true_positives/(2*true_positives+false_positives+false_negatives)
+    true_positives = int(cm[1][1])
+    true_negatives = int(cm[0][0])
+    false_positives = int(cm[0][1])
+    false_negatives = int(cm[1][0])
+    unlabeled_positives = int(cm[2][1])
+    unlabeled_negatives = int(cm[2][0])
+    labels, scores, predictions = map(list, zip(*list(filter(lambda x: x[0] != -1, list(zip(y_test, y_score, y_pred))))))
+    accuracy = accuracy_score(labels, predictions)
+    f1 = f1_score(labels, predictions)
+    roc = roc_auc_score(labels, scores)
 
     if cache:
         data = dataset_parser.list_from_file(test)
@@ -31,22 +33,10 @@ def compare_results(train, test, similarity, cache=None):
 
     return {'accuracy': accuracy,
             'f1': f1,
+            'roc': roc,
             'tp': true_positives,
             'tn': true_negatives,
             'fp': false_positives,
             'fn': false_negatives,
-            'up': unlabeled_positives}
-
-
-if __name__ == "__main__":
-    table = []
-    headers = ['Algorithm', 'Accuracy', 'F1', 'TP', 'TN', 'FP', 'FN', 'UP']
-
-    for name, alg in all_algorithms():
-        d = compare_results('datasets/train.csv', 'datasets/test_full.csv', alg, name)
-        table.append([name] + list(d.values()))
-
-    print(tabulate(table, headers, tablefmt='grid', floatfmt='.3f'))
-
-    print()
-    print(table)
+            'up': unlabeled_positives,
+            'un': unlabeled_negatives}
