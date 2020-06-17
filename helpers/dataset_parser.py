@@ -28,18 +28,22 @@ def extract(filename, all=False):
     result = [i.split('\n', 1) for i in instances]
     result = list(filter(lambda x: x[0] != '# Package  /**', result))
 
-    types, strings = map(list, zip(*result))
+    all_types, strings = map(list, zip(*result))
     strings = [re.sub('----------------------', '', s).strip('\n') for s in strings]
 
     comments = []
     groups = []
-    for s in strings:
+    types = []
+    for i in range(len(strings)):
+        s = strings[i]
         if '<=< ACCEPT -->' in s:
             comments.append(comment(s))
             groups.append(group(s))
+            types.append(all_types[i])
         elif all:
             comments.append(s)
             groups.append('')
+            types.append(all_types[i])
 
     return comments, groups, types
 
