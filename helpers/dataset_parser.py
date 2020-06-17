@@ -154,8 +154,8 @@ def get_cache_from_file(filename):
 def parse(file_in, file_out='_data.csv'):
     """Generate a dataset of unique labeled comment pairs and write it to a file."""
 
-    comments, groups, _ = extract(file_in)
-    data = generate_pairs(comments, groups)
+    comments, groups, types = extract(file_in)
+    data = generate_pairs_with_types(comments, groups, types)
     data.sort()
     data = list(d for d, _ in itertools.groupby(data))
     list_to_file(data, file_out)
