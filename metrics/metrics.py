@@ -50,7 +50,7 @@ def shuffled_test_set(func):
 
 
 def get_metrics(similarity, labels, scores):
-    """Get Accuracy, F1 and ROC AUC."""
+    """Get Accuracy, F1, ROC AUC and confusion matrix elements."""
 
     predictions = similarity.predict(scores)
     cm = confusion_matrix(labels, predictions)

@@ -36,7 +36,7 @@ def extract_features(data, similarity):
 
     data = np.array(data)
     pairs = data[:, :2]
-    labels = data[:, 2]
+    labels = list(map(int, data[:, 2]))
 
     signatures1 = [get_name(sig) for sig in data[:, 3]]
     signatures2 = [get_name(sig) for sig in data[:, 4]]

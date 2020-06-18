@@ -8,8 +8,8 @@ def plot_dataset_and_boundary(filename, similarity, ax, model, ax_title):
     data = dataset_parser.list_from_file(filename)
     features, labels = ml.extract_features(data, similarity)
 
-    pos_features = features[labels == '1']
-    neg_features = features[labels == '0']
+    pos_features = features[labels == 1]
+    neg_features = features[labels == 0]
 
     for f, m, l in [(pos_features, 'o', 'Positive class'), (neg_features, '^', 'Negative class')]:
         sims = f[:, 0]
