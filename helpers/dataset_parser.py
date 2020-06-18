@@ -19,7 +19,7 @@ def group(string):
 
 
 def extract(filename, all=False):
-    """Extract all comments, group tags if available and respective object types as three lists."""
+    """Extract all comments, group tags if available and respective object signatures as three lists."""
 
     f = open(filename, 'r')
     pattern = re.compile('[\w\W]+?\n----------------------\n\n')
@@ -28,24 +28,24 @@ def extract(filename, all=False):
     result = [i.split('\n', 1) for i in instances]
     result = list(filter(lambda x: x[0] != '# Package  /**', result))
 
-    all_types, strings = map(list, zip(*result))
+    all_signatures, strings = map(list, zip(*result))
     strings = [re.sub('----------------------', '', s).strip('\n') for s in strings]
 
     comments = []
     groups = []
-    types = []
+    signatures = []
     for i in range(len(strings)):
         s = strings[i]
         if '<=< ACCEPT -->' in s:
             comments.append(comment(s))
             groups.append(group(s))
-            types.append(all_types[i])
+            signatures.append(all_signatures[i])
         elif all:
             comments.append(s)
             groups.append('')
-            types.append(all_types[i])
+            signatures.append(all_signatures[i])
 
-    return comments, groups, types
+    return comments, groups, signatures
 
 
 def generate_pairs(comments, groups):
@@ -64,8 +64,8 @@ def generate_pairs(comments, groups):
     return pairs
 
 
-def generate_pairs_with_types(comments, groups, types):
-    """Generate labeled pairs of comments and their types from a list of comments with their group tags."""
+def generate_pairs_with_signatures(comments, groups, signatures):
+    """Generate labeled pairs of comments and their signatures from a list of comments with their group tags."""
 
     n = len(comments)
     pairs = []
@@ -73,9 +73,9 @@ def generate_pairs_with_types(comments, groups, types):
     for i in range(n):
         for j in range(i + 1, n):
             if groups[i] and groups[j]:
-                pairs.append([comments[i], comments[j], int(groups[i] == groups[j]), types[i], types[j]])
+                pairs.append([comments[i], comments[j], int(groups[i] == groups[j]), signatures[i], signatures[j]])
             else:
-                pairs.append([comments[i], comments[j], -1, types[i], types[j]])
+                pairs.append([comments[i], comments[j], -1, signatures[i], signatures[j]])
 
     return pairs
 
@@ -154,8 +154,8 @@ def get_cache_from_file(filename):
 def parse(file_in, file_out='_data.csv'):
     """Generate a dataset of unique labeled comment pairs and write it to a file."""
 
-    comments, groups, types = extract(file_in)
-    data = generate_pairs_with_types(comments, groups, types)
+    comments, groups, signatures = extract(file_in)
+    data = generate_pairs_with_signatures(comments, groups, signatures)
     data.sort()
     data = list(d for d, _ in itertools.groupby(data))
     list_to_file(data, file_out)
@@ -164,8 +164,8 @@ def parse(file_in, file_out='_data.csv'):
 def parse_full(file_in, file_out='_data.csv'):
     """Generate a dataset of unique typed comment pairs with labels when available and write it to a file."""
 
-    comments, groups, types = extract(file_in, True)
-    data = generate_pairs_with_types(comments, groups, types)
+    comments, groups, signatures = extract(file_in, True)
+    data = generate_pairs_with_signatures(comments, groups, signatures)
     data.sort()
     data = list(d for d, _ in itertools.groupby(data))
     list_to_file(data, file_out)

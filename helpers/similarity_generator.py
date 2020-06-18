@@ -24,6 +24,22 @@ def all_algorithms():
     yield 'WMD', WMDSimilarity()
 
 
+def get_algorithm_by_name(name, load=False):
+    """Get algorithm by its name. Load pretrained model if `load` is specified."""
+
+    d = {'LCS': LCSSimilarity(),
+         'COS': COSSimilarity(),
+         'LEV': LEVSimilarity(),
+         'LSH': LSHSimilarity(),
+         'Siam': SiameseSimilarity(),
+         'WMD': WMDSimilarity()}
+
+    alg = d[name]
+    if load:
+        alg.load(name)
+    return alg
+
+
 def all_similarities():
     """Yield all combinations of algorithms and pipelines.
 
@@ -51,7 +67,7 @@ def all_similarities():
 
 def all_similarities_cached():
     """Yield cached values for all combinations of algorithms and pipelines.
-    
+
     Yields
     ------
     tuple
@@ -78,7 +94,7 @@ def all_similarities_cached():
 
 def similarity_time_cached():
     """Yield cached execution time for all combinations of algorithms and pipelines.
-    
+
     Yields
     ------
     tuple
