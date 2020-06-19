@@ -35,7 +35,7 @@ def plot_dataset_and_boundary(filename, similarity, ax, model, ax_title):
     ax.legend()
 
 
-alg_name = 'Siam'
+alg_name = 'WMD'
 similarity = similarity_generator.get_algorithm_by_name(alg_name, True)
 
 fig, (ax_train, ax_test) = plt.subplots(1, 2, subplot_kw=dict(projection='3d'))

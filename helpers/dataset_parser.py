@@ -9,13 +9,19 @@ def comment(string):
 
     left_br = '<!-- .+ <=< ACCEPT -->'
     right_br = '<!-- ACCEPT >=> .+ -->'
-    return re.sub(left_br, '', re.sub(right_br, '', string))
+    match = re.search(left_br + '[\w\W]+' + right_br, string)
+    substr = match.group(0)
+    return re.sub(left_br, '', re.sub(right_br, '', substr))
 
 
 def group(string):
     """Extract a group tag from a single string."""
 
-    return re.sub('<!-- ', '', re.sub(' <=< ACCEPT -->[\w\W]*', '', string))
+    left_br = '<!-- '
+    right_br = ' <=< ACCEPT -->[\w\W]*'
+    match = re.search(left_br + '[\w\W]+' + right_br, string)
+    substr = match.group(0)
+    return re.sub(left_br, '', re.sub(right_br, '', substr))
 
 
 def extract(filename, all=False):
