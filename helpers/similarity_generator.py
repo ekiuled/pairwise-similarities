@@ -2,7 +2,7 @@ from similarities.lcs import LCSSimilarity
 from similarities.cos import COSSimilarity
 from similarities.lev import LEVSimilarity
 from similarities.lsh import LSHSimilarity
-from similarities.siamese import SiameseSimilarity
+from similarities.siam import SiameseSimilarity
 from similarities.wmd import WMDSimilarity
 from helpers import dataset_parser as parser
 

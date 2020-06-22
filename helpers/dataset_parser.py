@@ -1,187 +1,90 @@
 import re
-import csv
-import itertools
-import random
+import pandas as pd
+import json
 
 
 def comment(string):
-    """Extract a comment from a single tagged string."""
+    """Extract comment body."""
 
-    left_br = '<!-- .+ <=< ACCEPT -->'
-    right_br = '<!-- ACCEPT >=> .+ -->'
-    match = re.search(left_br + '[\w\W]+' + right_br, string)
-    substr = match.group(0)
-    return re.sub(left_br, '', re.sub(right_br, '', substr))
-
-
-def group(string):
-    """Extract a group tag from a single string."""
-
-    left_br = '<!-- '
-    right_br = ' <=< ACCEPT -->[\w\W]*'
-    match = re.search(left_br + '[\w\W]+' + right_br, string)
-    substr = match.group(0)
-    return re.sub(left_br, '', re.sub(right_br, '', substr))
+    open_accept = '<!-- .+ <=< ACCEPT -->'
+    close_accept = '<!-- ACCEPT >=> .+ -->'
+    meta_pattern = '<!-- META [\w\W]+? -->'
+    comment = re.sub(close_accept, '', re.sub(open_accept, '',  re.sub(meta_pattern, '', string)))
+    return re.sub('[ ]+', ' ', comment)
 
 
-def extract(filename, all=False):
-    """Extract all comments, group tags if available and respective object signatures as three lists."""
+def group_tag(string):
+    """Extract group tag."""
+
+    left_br = '><!-- '
+    right_br = ' <=< ACCEPT -->'
+    accept = re.search(left_br + '.+' + right_br, string)
+    if not accept:
+        return ''
+    return re.sub(left_br, '', re.sub(right_br, '', accept.group(0)))
+
+
+def object_name(meta):
+    """Extract object name from metadata."""
+
+    json_string = re.sub(' -->', '', (re.sub('<!-- META ', '', meta)))
+    try:
+        signature = json.loads(json_string)['entitySignature']
+    except:
+        return ''
+    if '(' not in signature:
+        return signature
+    return re.search('[^\s]+?\(', signature).group(0)[:-1]
+
+
+def extract(filename):
+    """Extract all comments, object names, metadata and group tags."""
 
     f = open(filename, 'r')
-    pattern = re.compile('[\w\W]+?\n----------------------\n\n')
-    instances = pattern.findall(f.read())
+    pattern = re.compile('(<!--[^\n\r]+(\n[ ]+[^\n\r]+)*)')
+    instances = [match[0] for match in pattern.findall(f.read())]
 
-    result = [i.split('\n', 1) for i in instances]
-    result = list(filter(lambda x: x[0] != '# Package  /**', result))
+    meta_pattern = '<!-- META [\w\W]+? -->'
+    meta = [re.search(meta_pattern, inst).group(0) for inst in instances]
+    object_names = [object_name(m) for m in meta]
 
-    all_signatures, strings = map(list, zip(*result))
-    strings = [re.sub('----------------------', '', s).strip('\n') for s in strings]
+    nonempty_name_idx = [i for i in range(len(object_names)) if object_names[i]]
+    instances = [instances[i] for i in nonempty_name_idx]
+    meta = [meta[i] for i in nonempty_name_idx]
+    object_names = [object_names[i] for i in nonempty_name_idx]
 
-    comments = []
-    groups = []
-    signatures = []
-    for i in range(len(strings)):
-        s = strings[i]
-        if '<=< ACCEPT -->' in s:
-            comments.append(comment(s))
-            groups.append(group(s))
-            signatures.append(all_signatures[i])
-        elif all:
-            comments.append(s)
-            groups.append('')
-            signatures.append(all_signatures[i])
+    comments = [comment(inst) for inst in instances]
+    group_tags = [group_tag(inst) for inst in instances]
 
-    return comments, groups, signatures
+    return comments, object_names, meta, group_tags
 
 
-def generate_pairs(comments, groups):
-    """Generate labeled pairs of comments from a list of comments with their group tags."""
+def generate_pairs(comments, object_names, meta, group_tags, skip_untagged=True):
+    """Generate a dataframe of labeled comment pairs."""
 
     n = len(comments)
-    pairs = []
-
-    for i in range(n):
-        for j in range(i + 1, n):
-            if groups[i] and groups[j]:
-                pairs.append([comments[i], comments[j], int(groups[i] == groups[j])])
-            else:
-                pairs.append([comments[i], comments[j], -1])
-
-    return pairs
-
-
-def generate_pairs_with_signatures(comments, groups, signatures):
-    """Generate labeled pairs of comments and their signatures from a list of comments with their group tags."""
-
-    n = len(comments)
-    pairs = []
-
-    for i in range(n):
-        for j in range(i + 1, n):
-            if groups[i] and groups[j]:
-                pairs.append([comments[i], comments[j], int(groups[i] == groups[j]), signatures[i], signatures[j]])
-            else:
-                pairs.append([comments[i], comments[j], -1, signatures[i], signatures[j]])
-
-    return pairs
-
-
-def generate_triplets(comments, groups):
-    """Generate comment triplets from a list of comments with their group tags."""
-
-    n = len(comments)
-    triplets = []
-
-    for i in range(n):
-        positive = []
-        negative = []
-        for j in range(i + 1, n):
-            if groups[i] == groups[j]:
-                positive.append(comments[j])
-            else:
-                negative.append(comments[j])
-        if negative:
-            for p in positive:
-                triplets.append([comments[i], p, random.choice(negative)])
-
-    return triplets
-
-
-def list_to_file(list, filename):
-    """Write a list to a file in csv format."""
-
-    with open(filename, 'w+', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        for item in list:
-            writer.writerow(item)
-
-
-def list_from_file(filename):
-    """Read a csv into a list."""
-
     data = []
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            data.append(row)
-    return data
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            if group_tags[i] and group_tags[j]:
+                label = int(group_tags[i] == group_tags[j])
+            elif skip_untagged:
+                continue
+            else:
+                label = -1
+            data.append([comments[i], comments[j],
+                         object_names[i], object_names[j],
+                         meta[i], meta[j],
+                         label])
+
+    return pd.DataFrame(data, columns=['comment1', 'comment2', 'name1', 'name2', 'meta1', 'meta2', 'label'])
 
 
-def dataset_from_file(filename):
-    """Make a list of pairs and a list of whether comments in a pair are similar (0 or 1)."""
+def parse(file_in, file_out, skip_untagged=True):
+    """Generate a dataset of unique labeled comment pairs and save it in a file."""
 
-    pairs = []
-    similar = []
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            pairs.append([row[0], row[1]])
-            similar.append(int(row[2]))
-    return pairs, similar
-
-
-def cache_similarity_to_file(file_in, file_out, similarity):
-    """Apply similarity to all elements of the input dataset and write results and labels to the output file."""
-
-    pairs, y = dataset_from_file(file_in)
-    x = similarity.run_similarity(pairs)
-    data = zip(x, y)
-    list_to_file(data, file_out)
-
-
-def get_cache_from_file(filename):
-    """Read cached similarities and labels into two lists."""
-
-    data = list_from_file(filename)
-    scores, labels = list(map(list, zip(*data)))
-    return list(map(float, scores)), list(map(int, labels))
-
-
-def parse(file_in, file_out='_data.csv'):
-    """Generate a dataset of unique labeled comment pairs and write it to a file."""
-
-    comments, groups, signatures = extract(file_in)
-    data = generate_pairs_with_signatures(comments, groups, signatures)
-    data.sort()
-    data = list(d for d, _ in itertools.groupby(data))
-    list_to_file(data, file_out)
-
-
-def parse_full(file_in, file_out='_data.csv'):
-    """Generate a dataset of unique typed comment pairs with labels when available and write it to a file."""
-
-    comments, groups, signatures = extract(file_in, True)
-    data = generate_pairs_with_signatures(comments, groups, signatures)
-    data.sort()
-    data = list(d for d, _ in itertools.groupby(data))
-    list_to_file(data, file_out)
-
-
-def parse_triplets(file_in, file_out='_data.csv'):
-    """Generate a dataset of unique comment triplets and write it to a file."""
-
-    comments, groups, _ = extract(file_in)
-    data = generate_triplets(comments, groups)
-    data.sort()
-    data = list(d for d, _ in itertools.groupby(data))
-    list_to_file(data, file_out)
+    comments, object_names, meta, group_tags = extract(file_in)
+    df = generate_pairs(comments, object_names, meta, group_tags, skip_untagged)
+    df.drop_duplicates(inplace=True)
+    df.to_csv(file_out)

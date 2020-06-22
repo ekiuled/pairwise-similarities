@@ -6,12 +6,10 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 def lr_evaluate(train_file, test_file, similarity, name):
     """Get metrics for logistic regression."""
 
-    train = dataset_parser.list_from_file(train_file)
     similarity.load(name)
-    model = ml.logistic_regression_train(train, similarity)
+    model = ml.logistic_regression_train(train_file, similarity)
 
-    test = dataset_parser.list_from_file(test_file)
-    features, labels = ml.extract_features(test, similarity)
+    features, labels = ml.extract_features(test_file, similarity)
     predictions = model.predict(features)
 
     cm = confusion_matrix(labels, predictions)

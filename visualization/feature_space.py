@@ -5,8 +5,7 @@ import numpy as np
 
 
 def plot_dataset_and_boundary(filename, similarity, ax, model, ax_title):
-    data = dataset_parser.list_from_file(filename)
-    features, labels = ml.extract_features(data, similarity)
+    features, labels = ml.extract_features(filename, similarity)
 
     pos_features = features[labels == 1]
     neg_features = features[labels == 0]
@@ -35,16 +34,15 @@ def plot_dataset_and_boundary(filename, similarity, ax, model, ax_title):
     ax.legend()
 
 
-alg_name = 'WMD'
+alg_name = 'LCS'
 similarity = similarity_generator.get_algorithm_by_name(alg_name, True)
 
 fig, (ax_train, ax_test) = plt.subplots(1, 2, subplot_kw=dict(projection='3d'))
 
-train = dataset_parser.list_from_file('datasets/train.csv')
-model = ml.logistic_regression_train(train, similarity)
+model = ml.logistic_regression_train('data/train.csv', similarity)
 
-plot_dataset_and_boundary('datasets/train.csv', similarity, ax_train, model, 'Train dataset')
-plot_dataset_and_boundary('datasets/test.csv', similarity, ax_test, model, 'Test dataset')
+plot_dataset_and_boundary('data/train.csv', similarity, ax_train, model, 'Train dataset')
+plot_dataset_and_boundary('data/test.csv', similarity, ax_test, model, 'Test dataset')
 
 fig.suptitle(alg_name)
 

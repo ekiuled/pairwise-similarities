@@ -2,21 +2,7 @@ from sklearn.linear_model import LogisticRegression
 from helpers import dataset_parser
 import difflib
 import numpy as np
-
-
-def get_name(signature):
-    """Extract object name from its signature."""
-
-    words = signature.split()
-    if words[0] == '#':
-        words = words[1:]
-    object_type = words[0]
-    if object_type == 'Method':
-        for word in words:
-            if '(' in word:
-                return word.split('(')[0]
-    else:
-        return words[1]
+import pandas as pd
 
 
 def get_signature_similarities(signature_pairs):
@@ -31,26 +17,25 @@ def get_lengths(pairs):
     return [len(c1) + len(c2) for c1, c2 in pairs]
 
 
-def extract_features(data, similarity):
+def extract_features(filename, similarity):
     """Get a list of features (X) and a list of labels (y)."""
 
-    data = np.array(data)
-    pairs = data[:, :2]
-    labels = list(map(int, data[:, 2]))
+    df = pd.read_csv(filename, index_col=0)
+    pairs = df[['comment1', 'comment2']]
+    labels = df['label']
 
-    signatures1 = [get_name(sig) for sig in data[:, 3]]
-    signatures2 = [get_name(sig) for sig in data[:, 4]]
-    signature_similarities = get_signature_similarities(list(zip(signatures1, signatures2)))
+    names = df[['name1', 'name2']]
+    name_similarities = get_signature_similarities(names.to_numpy())
 
-    comment_lengths = get_lengths(pairs)
+    comment_lengths = get_lengths(pairs.to_numpy())
 
-    similarities = similarity.run_similarity(pairs)
+    similarities = similarity.run_similarity(pairs.to_numpy())
 
-    return np.array(list(zip(similarities, comment_lengths, signature_similarities))), np.array(labels)
+    return np.array(list(zip(similarities, comment_lengths, name_similarities))), labels.to_numpy()
 
 
-def logistic_regression_train(data, similarity):
-    X, y = extract_features(data, similarity)
+def logistic_regression_train(filename, similarity):
+    X, y = extract_features(filename, similarity)
     model = LogisticRegression().fit(X, y)
     return model
 

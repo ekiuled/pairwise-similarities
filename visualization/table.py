@@ -9,7 +9,8 @@ def similarity_metrics():
     headers = ['Algorithm', 'Accuracy', 'F1', 'ROC', 'TP', 'TN', 'FP', 'FN', 'UP', 'UN']
 
     for name, alg in all_algorithms():
-        labeled = metrics.test_set(metrics.get_metrics)('datasets/semi random split/test.csv', alg, name)
+        labeled = metrics.train_test(metrics.get_metrics)('data/train.csv', 'data/test.csv', alg, True, name)
+        #labeled = metrics.test_set(metrics.get_metrics)('data/test.csv', alg, name)
         table.append((name, labeled['accuracy'], labeled['f1'], labeled['roc'],
                       labeled['tp'], labeled['tn'], labeled['fp'], labeled['fn']))
 
@@ -21,8 +22,8 @@ def similarity_metrics_full_test():
     headers = ['Algorithm', 'Accuracy', 'F1', 'ROC', 'TP', 'TN', 'FP', 'FN', 'UP', 'UN']
 
     for name, alg in all_algorithms():
-        labeled = metrics.test_set(metrics.get_metrics)('datasets/test.csv', alg, name)
-        unlabeled = compare_results('datasets/test_full.csv', alg, name)
+        labeled = metrics.test_set(metrics.get_metrics)('data/test.csv', alg, name)
+        unlabeled = compare_results('data/test_full.csv', alg, name)
         table.append((name, labeled['accuracy'], labeled['f1'], labeled['roc'],
                       labeled['tp'], labeled['tn'], labeled['fp'], labeled['fn'],
                       unlabeled['up'], unlabeled['un']))
@@ -35,7 +36,7 @@ def lr_test_metrics():
     headers = ['Algorithm', 'Accuracy', 'F1', 'TP', 'TN', 'FP', 'FN']
 
     for name, alg in all_algorithms():
-        labeled = logistic_regression_metrics.lr_evaluate('datasets/train.csv', 'datasets/test.csv', alg, name)
+        labeled = logistic_regression_metrics.lr_evaluate('data/train.csv', 'data/test.csv', alg, name)
         table.append((name, labeled['accuracy'], labeled['f1'],
                       labeled['tp'], labeled['tn'], labeled['fp'], labeled['fn']))
 
@@ -47,8 +48,8 @@ def feature_metrics():
     headers = ['Algorithm', 'Accuracy', 'LR Accuracy', 'F1', 'LR F1']
 
     for name, alg in all_algorithms():
-        plain = metrics.test_set(metrics.get_metrics)('datasets/project split/test.csv', alg, name)
-        lr = logistic_regression_metrics.lr_evaluate('datasets/project split/train.csv', 'datasets/project split/test.csv', alg, name)
+        plain = metrics.test_set(metrics.get_metrics)('data/project split/test.csv', alg, name)
+        lr = logistic_regression_metrics.lr_evaluate('data/project split/train.csv', 'data/project split/test.csv', alg, name)
         table.append((name, plain['accuracy'], lr['accuracy'],
                       plain['f1'], lr['f1']))
 
@@ -56,4 +57,4 @@ def feature_metrics():
 
 
 if __name__ == "__main__":
-    similarity_metrics()
+    lr_test_metrics()
