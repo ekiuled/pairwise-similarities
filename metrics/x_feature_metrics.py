@@ -1,6 +1,8 @@
 from pipeline import ml
 from helpers import dataset_parser, similarity_generator
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from metrics.metrics import get_metrics
+import pandas as pd
 
 
 def lr_evaluate(train_file, test_file, similarity, name):
@@ -24,3 +26,21 @@ def lr_evaluate(train_file, test_file, similarity, name):
             'tn': true_negatives,
             'fp': false_positives,
             'fn': false_negatives}
+
+
+def siamx_evaluate(train_file, test_file, verbose=False, train=False):
+    """Get metrics for siamese neural network with extra feature."""
+
+    df_train = pd.read_csv(train_file, index_col=0)
+    df_test = pd.read_csv(test_file, index_col=0)
+
+    name = 'SiamX'
+    similarity = similarity_generator.get_algorithm_by_name(name)
+    if train:
+        similarity.train(df_train, verbose, name)
+    else:
+        similarity.load(name)
+    y_pred = similarity.run_similarity(df_test)
+    y_test = df_test['label'].to_numpy()
+
+    return get_metrics(similarity, y_test, y_pred)

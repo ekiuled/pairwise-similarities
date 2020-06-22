@@ -1,6 +1,6 @@
 from metrics.unlabeled import compare_results
-from metrics import metrics, logistic_regression_metrics
-from helpers.similarity_generator import all_algorithms
+from metrics import metrics, x_feature_metrics
+from helpers.similarity_generator import all_algorithms, get_algorithm_by_name
 from tabulate import tabulate
 
 
@@ -36,7 +36,7 @@ def lr_test_metrics():
     headers = ['Algorithm', 'Accuracy', 'F1', 'TP', 'TN', 'FP', 'FN']
 
     for name, alg in all_algorithms():
-        labeled = logistic_regression_metrics.lr_evaluate('data/train.csv', 'data/test.csv', alg, name)
+        labeled = x_feature_metrics.lr_evaluate('data/train.csv', 'data/test.csv', alg, name)
         table.append((name, labeled['accuracy'], labeled['f1'],
                       labeled['tp'], labeled['tn'], labeled['fp'], labeled['fn']))
 
@@ -45,13 +45,16 @@ def lr_test_metrics():
 
 def feature_metrics():
     table = []
-    headers = ['Algorithm', 'Accuracy', 'LR Accuracy', 'F1', 'LR F1']
+    headers = ['Algorithm', 'Accuracy', '+ Accuracy', 'F1', '+ F1']
 
     for name, alg in all_algorithms():
-        plain = metrics.test_set(metrics.get_metrics)('data/project split/test.csv', alg, name)
-        lr = logistic_regression_metrics.lr_evaluate('data/project split/train.csv', 'data/project split/test.csv', alg, name)
-        table.append((name, plain['accuracy'], lr['accuracy'],
-                      plain['f1'], lr['f1']))
+        plain = metrics.test_set(metrics.get_metrics)('data/test.csv', alg, name)
+        if name == 'Siam':
+            x = x_feature_metrics.siamx_evaluate('data/train.csv', 'data/test.csv')
+        else:
+            x = x_feature_metrics.lr_evaluate('data/train.csv', 'data/test.csv', alg, name)
+        table.append((name, plain['accuracy'], x['accuracy'],
+                      plain['f1'], x['f1']))
 
     print(tabulate(table, headers, tablefmt='grid', floatfmt='.4f'))
 

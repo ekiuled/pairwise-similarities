@@ -1,7 +1,38 @@
 from helpers import dataset_parser
-from helpers.similarity_generator import all_algorithms
+from helpers.similarity_generator import all_algorithms, get_algorithm_by_name
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix
 from tabulate import tabulate
+import pandas as pd
+from pipeline import ml
+
+
+def label_unlabeled(file_in, file_out_prefix='data/up/'):
+    """Get all unlabeled pairs from `file_in` and save those predicted as positives in `file_out`."""
+
+    table = []
+    headers = ['Algorithm', 'UP']
+    df = pd.read_csv(file_in, index_col=0, na_filter=False)
+
+    for name in ['LCS', 'COS', 'LEV', 'LSH', 'WMD']:
+        alg = get_algorithm_by_name(name, True)
+        model = ml.logistic_regression_train('data/train.csv', alg)
+        X, _ = ml.extract_features(file_in, alg)
+
+        predictions = model.predict(X)
+        df_up = df[predictions == 1]
+        df_up = df_up.drop(columns=['label', 'name1', 'name2'])
+        df_up.to_csv(file_out_prefix + name + '.csv')
+        table.append((name, len(df_up.index)))
+
+    name = 'SiamX'
+    alg = get_algorithm_by_name(name, True)
+    predictions = alg.predict(alg.run_similarity(df))
+    df_up = df[predictions == 1]
+    df_up = df_up.drop(columns=['label', 'name1', 'name2'])
+    df_up.to_csv(file_out_prefix + name + '.csv')
+    table.append((name, len(df_up.index)))
+
+    print(tabulate(table, headers, tablefmt='grid'))
 
 
 def compare_results(test, similarity, cache=None):

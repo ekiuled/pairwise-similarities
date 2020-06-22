@@ -2,26 +2,27 @@ from similarities.lcs import LCSSimilarity
 from similarities.cos import COSSimilarity
 from similarities.lev import LEVSimilarity
 from similarities.lsh import LSHSimilarity
-from similarities.siam import SiameseSimilarity
 from similarities.wmd import WMDSimilarity
+from similarities.siam import SiameseSimilarity
+from similarities.siamx import SiameseXSimilarity
 from helpers import dataset_parser as parser
 
 
 def all_algorithms():
-    """Yield all algorithms.
+    """Get list of all algorithms.
 
-    Yields
+    Returns
     ------
-    tuple
-        Title and similarity.
+    list
+        Tuples of title and similarity.
     """
-
-    yield 'LCS', LCSSimilarity()
-    yield 'COS', COSSimilarity()
-    yield 'LEV', LEVSimilarity()
-    yield 'LSH', LSHSimilarity()
-    yield 'Siam', SiameseSimilarity()
-    yield 'WMD', WMDSimilarity()
+    return [
+        ('LCS', LCSSimilarity()),
+        ('COS', COSSimilarity()),
+        ('LEV', LEVSimilarity()),
+        ('LSH', LSHSimilarity()),
+        ('WMD', WMDSimilarity()),
+        ('Siam', SiameseSimilarity())]
 
 
 def get_algorithm_by_name(name, load=False):
@@ -32,6 +33,7 @@ def get_algorithm_by_name(name, load=False):
          'LEV': LEVSimilarity(),
          'LSH': LSHSimilarity(),
          'Siam': SiameseSimilarity(),
+         'SiamX': SiameseXSimilarity(),
          'WMD': WMDSimilarity()}
 
     alg = d[name]

@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 
 
-def get_signature_similarities(signature_pairs):
+def get_name_similarities(name_pairs):
     """Get char LCS similarity for each signature pair."""
 
-    return [difflib.SequenceMatcher(None, sig1, sig2).ratio() for sig1, sig2 in signature_pairs]
+    return [difflib.SequenceMatcher(None, sig1, sig2).ratio() for sig1, sig2 in name_pairs]
 
 
 def get_lengths(pairs):
@@ -20,12 +20,12 @@ def get_lengths(pairs):
 def extract_features(filename, similarity):
     """Get a list of features (X) and a list of labels (y)."""
 
-    df = pd.read_csv(filename, index_col=0)
+    df = pd.read_csv(filename, index_col=0, na_filter=False)
     pairs = df[['comment1', 'comment2']]
     labels = df['label']
 
     names = df[['name1', 'name2']]
-    name_similarities = get_signature_similarities(names.to_numpy())
+    name_similarities = get_name_similarities(names.to_numpy())
 
     comment_lengths = get_lengths(pairs.to_numpy())
 
