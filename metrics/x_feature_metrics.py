@@ -1,6 +1,6 @@
 from pipeline import ml
 from helpers import dataset_parser, similarity_generator
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, precision_score
 from metrics.metrics import get_metrics
 import pandas as pd
 
@@ -21,6 +21,7 @@ def lr_evaluate(train_file, test_file, similarity, name):
     false_negatives = int(cm[1][0])
 
     return {'accuracy': accuracy_score(labels, predictions),
+            'precision': precision_score(labels, predictions),
             'f1': f1_score(labels, predictions),
             'tp': true_positives,
             'tn': true_negatives,

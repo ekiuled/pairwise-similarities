@@ -45,7 +45,7 @@ def lr_test_metrics():
 
 def feature_metrics():
     table = []
-    headers = ['Algorithm', 'Accuracy', '+ Accuracy', 'F1', '+ F1']
+    headers = ['Algorithm', 'Accuracy', '+ Accuracy', 'Precision', '+ Precision', 'F1', '+ F1']
 
     for name, alg in all_algorithms():
         plain = metrics.test_set(metrics.get_metrics)('data/test.csv', alg, name)
@@ -54,6 +54,7 @@ def feature_metrics():
         else:
             x = x_feature_metrics.lr_evaluate('data/train.csv', 'data/test.csv', alg, name)
         table.append((name, plain['accuracy'], x['accuracy'],
+                      plain['precision'], x['precision'],
                       plain['f1'], x['f1']))
 
     print(tabulate(table, headers, tablefmt='grid', floatfmt='.4f'))

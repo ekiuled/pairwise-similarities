@@ -1,5 +1,5 @@
 from similarities.similarity import Similarity
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix, precision_score
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
@@ -59,6 +59,7 @@ def get_metrics(similarity, labels, scores):
     false_negatives = int(cm[1][0])
     return {'accuracy': accuracy_score(labels, predictions),
             'f1': f1_score(labels, predictions),
+            'precision': precision_score(labels, predictions),
             'roc': roc_auc_score(labels, scores),
             'tp': true_positives,
             'tn': true_negatives,

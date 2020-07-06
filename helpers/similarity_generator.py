@@ -3,6 +3,7 @@ from similarities.cos import COSSimilarity
 from similarities.lev import LEVSimilarity
 from similarities.lsh import LSHSimilarity
 from similarities.wmd import WMDSimilarity
+from similarities.wmdk import WMDKSimilarity
 from similarities.siam import SiameseSimilarity
 from similarities.siamx import SiameseXSimilarity
 from helpers import dataset_parser as parser
@@ -34,7 +35,8 @@ def get_algorithm_by_name(name, load=False):
          'LSH': LSHSimilarity(),
          'Siam': SiameseSimilarity(),
          'SiamX': SiameseXSimilarity(),
-         'WMD': WMDSimilarity()}
+         'WMD': WMDSimilarity(),
+         'WMDK': WMDKSimilarity()}
 
     alg = d[name]
     if load:

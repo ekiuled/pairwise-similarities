@@ -7,7 +7,8 @@ from pipeline import ml
 
 
 def label_unlabeled(file_in, file_out_prefix='data/up/'):
-    """Get all unlabeled pairs from `file_in` and save those predicted as positives in `file_out`."""
+    """Get all unlabeled pairs from `file_in` and save those predicted as positives in `file_out`.
+    Sort by predictions."""
 
     table = []
     headers = ['Algorithm', 'UP']
@@ -19,16 +20,29 @@ def label_unlabeled(file_in, file_out_prefix='data/up/'):
         X, _ = ml.extract_features(file_in, alg)
 
         predictions = model.predict(X)
+        scores = model.predict_proba(X)
+        scores = scores[predictions == 1]
+        scores = scores[:, 1]
         df_up = df[predictions == 1]
-        df_up = df_up.drop(columns=['label', 'name1', 'name2'])
+        df_up.drop(columns=['label', 'name1', 'name2'], inplace=True)
+        df_up.insert(4, 'score', scores)
+        df_up.sort_values(by='score', ascending=False, inplace=True)
+        df_up.to_csv(file_out_prefix + 'scores/' + name + '.csv')
+        df_up.drop(columns=['score'], inplace=True)
         df_up.to_csv(file_out_prefix + name + '.csv')
         table.append((name, len(df_up.index)))
 
     name = 'SiamX'
     alg = get_algorithm_by_name(name, True)
-    predictions = alg.predict(alg.run_similarity(df))
+    scores = alg.run_similarity(df)
+    predictions = alg.predict(scores)
+    scores = scores[predictions == 1]
     df_up = df[predictions == 1]
-    df_up = df_up.drop(columns=['label', 'name1', 'name2'])
+    df_up.drop(columns=['label', 'name1', 'name2'], inplace=True)
+    df_up.insert(4, 'score', scores)
+    df_up.sort_values(by='score', ascending=False, inplace=True)
+    df_up.to_csv(file_out_prefix + 'scores/' + name + '.csv')
+    df_up.drop(columns=['score'], inplace=True)
     df_up.to_csv(file_out_prefix + name + '.csv')
     table.append((name, len(df_up.index)))
 

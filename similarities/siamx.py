@@ -39,7 +39,7 @@ class SiameseXSimilarity(Similarity):
         """Predict similarity for each pair."""
 
         comments1, comments2, word_counts, name_similarities = self.features(df)
-        return list(self.model.predict([comments1, comments2, word_counts, name_similarities]).ravel())
+        return np.array(list(self.model.predict([comments1, comments2, word_counts, name_similarities]).ravel()))
 
     def load(self, cache):
         """Load trained model."""
