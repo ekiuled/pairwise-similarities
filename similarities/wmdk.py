@@ -14,7 +14,7 @@ class WMDKSimilarity(Similarity):
 
         super().__init__()
         self.embedding_dimension = 50
-        self.model_cache = 'cache/models/wmdk'
+        self.model_cache = 'cache/models/w2v'
 
     def similarity(self, x, y):
         x = text_to_word_sequence(x)
@@ -30,19 +30,20 @@ class WMDKSimilarity(Similarity):
     def train(self, pairs, labels, verbose=False, cache=None):
         """Train word2vec embeddings."""
 
-        # Train
-        reader = pd.read_csv('data/kaggle/code.csv', chunksize=10**5, usecols=['doc'], lineterminator='\n')
-        empty = True
-        for chunk in reader:
-            comments = list(map(text_to_word_sequence, chunk['doc']))
-            if empty:
-                self.word2vec = Word2Vec(comments, min_count=1, size=self.embedding_dimension)
-                empty = False
-            else:
-                self.word2vec.build_vocab(comments, update=True)
-                self.word2vec.train(comments, total_examples=len(comments), epochs=self.word2vec.epochs)
+        # # Train
+        # reader = pd.read_csv('data/kaggle/code.csv', chunksize=10**5, usecols=['doc'], lineterminator='\n')
+        # empty = True
+        # for chunk in reader:
+        #     comments = list(map(text_to_word_sequence, chunk['doc']))
+        #     if empty:
+        #         self.word2vec = Word2Vec(comments, min_count=1, size=self.embedding_dimension)
+        #         empty = False
+        #     else:
+        #         self.word2vec.build_vocab(comments, update=True)
+        #         self.word2vec.train(comments, total_examples=len(comments), epochs=self.word2vec.epochs)
 
-        # Save
-        if cache:
-            self.word2vec.save(self.model_cache)
+        # # Save
+        # if cache:
+        #     self.word2vec.save(self.model_cache)
+        self.word2vec = Word2Vec.load(self.model_cache)
         super().train(pairs, labels, verbose, cache)

@@ -3,6 +3,7 @@ from helpers.similarity_generator import all_algorithms, get_algorithm_by_name
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix
 from tabulate import tabulate
 import pandas as pd
+import numpy as np
 from pipeline import ml
 
 
@@ -28,8 +29,6 @@ def label_unlabeled(file_in, file_out_prefix='data/up/'):
         df_up.insert(4, 'score', scores)
         df_up.sort_values(by='score', ascending=False, inplace=True)
         df_up.to_csv(file_out_prefix + 'scores/' + name + '.csv')
-        df_up.drop(columns=['score'], inplace=True)
-        df_up.to_csv(file_out_prefix + name + '.csv')
         table.append((name, len(df_up.index)))
 
     name = 'SiamX'
@@ -42,9 +41,32 @@ def label_unlabeled(file_in, file_out_prefix='data/up/'):
     df_up.insert(4, 'score', scores)
     df_up.sort_values(by='score', ascending=False, inplace=True)
     df_up.to_csv(file_out_prefix + 'scores/' + name + '.csv')
-    df_up.drop(columns=['score'], inplace=True)
-    df_up.to_csv(file_out_prefix + name + '.csv')
     table.append((name, len(df_up.index)))
+
+    print(tabulate(table, headers, tablefmt='grid'))
+
+
+def label_unlabeled_plain(file_in, file_out_prefix='data/up/plain/'):
+    """Get all unlabeled pairs from `file_in` and save those predicted as positives in `file_out`.
+    Sort by predictions."""
+
+    table = []
+    headers = ['Algorithm', 'UP']
+    df = pd.read_csv(file_in, index_col=0, na_filter=False)
+    X = list(zip(df.comment1, df.comment2))
+
+    for name, alg in all_algorithms():
+        alg.load(name)
+
+        scores = np.array(alg.run_similarity(X))
+        predictions = alg.predict(scores)
+        scores = scores[predictions == 1]
+        df_up = df[predictions == 1]
+        df_up.drop(columns=['label', 'name1', 'name2'], inplace=True)
+        df_up.insert(4, 'score', scores)
+        df_up.sort_values(by='score', ascending=False, inplace=True)
+        df_up.to_csv(file_out_prefix + 'scores/' + name + '.csv')
+        table.append((name, len(df_up.index)))
 
     print(tabulate(table, headers, tablefmt='grid'))
 
