@@ -1,6 +1,6 @@
 from similarities.similarity import Similarity
 from scipy.spatial.distance import cosine
-from normalizer import words
+from pipeline.normalizer import words
 
 
 class COSSimilarity(Similarity):

@@ -1,6 +1,6 @@
 from similarities.similarity import Similarity
 import difflib
-from normalizer import words
+from pipeline.normalizer import words
 
 
 class LCSSimilarity(Similarity):

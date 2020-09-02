@@ -1,6 +1,6 @@
 from similarities.similarity import Similarity
 from datasketch import MinHash, MinHashLSH
-from normalizer import words
+from pipeline.normalizer import words
 
 
 class LSHSimilarity(Similarity):
