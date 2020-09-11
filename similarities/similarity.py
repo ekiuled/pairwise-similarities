@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pipeline.segmentation import segment
 from pipeline.normalizer import normalize
 from scipy.optimize import linprog
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 import numpy as np
 import pickle
 

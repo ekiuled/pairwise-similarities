@@ -54,6 +54,8 @@ class SiameseX2Similarity(Similarity):
 
         labels = df['label'].to_numpy()
         self.model = load_model(self.model_cache)
+        with open(self.tokenizer_cache) as f:
+            self.tokenizer = tokenizer_from_json(json.load(f))
         super().train(df, labels, verbose, cache)
 
     def features(self, df):
