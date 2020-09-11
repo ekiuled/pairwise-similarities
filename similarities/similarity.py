@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pipeline.segmentation import segment
 from pipeline.normalizer import normalize
 from scipy.optimize import linprog
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 import numpy as np
 import pickle
 
@@ -42,7 +42,7 @@ class Similarity(ABC):
         metrics = []
         for threshold in thresholds:
             predictions = np.greater_equal(scores, threshold).astype(int)
-            metrics.append(accuracy_score(labels, predictions))
+            metrics.append(f1_score(labels, predictions))
         optimal_ix = np.argmax(metrics)
         self.threshold = thresholds[optimal_ix]
         if verbose:

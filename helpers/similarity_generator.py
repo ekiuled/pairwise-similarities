@@ -6,6 +6,7 @@ from similarities.wmd import WMDSimilarity
 from similarities.wmdk import WMDKSimilarity
 from similarities.siam import SiameseSimilarity
 from similarities.siamx import SiameseXSimilarity
+from similarities.siamx2 import SiameseX2Similarity
 from similarities.d2v import D2VSimilarity
 from similarities.d2vk import D2VKSimilarity
 from helpers import dataset_parser as parser
@@ -37,6 +38,7 @@ def get_algorithm_by_name(name, load=False):
          'LSH': LSHSimilarity(),
          'Siam': SiameseSimilarity(),
          'SiamX': SiameseXSimilarity(),
+         'SiamX2': SiameseX2Similarity(),
          'WMD': WMDSimilarity(),
          'WMDK': WMDKSimilarity(),
          'D2V': D2VSimilarity(),
