@@ -7,6 +7,7 @@ from similarities.wmdk import WMDKSimilarity
 from similarities.siam import SiameseSimilarity
 from similarities.siamx import SiameseXSimilarity
 from similarities.d2v import D2VSimilarity
+from similarities.d2vk import D2VKSimilarity
 from helpers import dataset_parser as parser
 
 
@@ -38,7 +39,8 @@ def get_algorithm_by_name(name, load=False):
          'SiamX': SiameseXSimilarity(),
          'WMD': WMDSimilarity(),
          'WMDK': WMDKSimilarity(),
-         'D2V': D2VSimilarity()}
+         'D2V': D2VSimilarity(),
+         'D2VK': D2VKSimilarity()}
 
     alg = d[name]
     if load:
